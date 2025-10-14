@@ -11,7 +11,9 @@ namespace Line_98
 {
     public class MainGamePanel : Panel
     {
+        //Form tham chiếu từ Main_Form
         public Main_Form Main_Form;
+
         //Tạo 1 bảng gồm 9*9 Cells (button) độ lớn 9x9
         private Button[,] BoardCells = new Button[9, 9];
 
@@ -31,7 +33,7 @@ namespace Line_98
         };
 
         //Hằng quyết định số lượng banh mới mỗi lần tạo
-        private const int MaxBallsPerGeneration = 3;
+        private const int MaxBallsPerGeneration = 5;
 
         //Hằng quyết định kích cỡ các quả banh
         private const int BallsSize = 30;
@@ -39,19 +41,21 @@ namespace Line_98
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private Button FirstSelectedCell = null;
 
+        //Constructor
         public MainGamePanel(Main_Form mainForm)
         {
             this.Main_Form = mainForm;
 
-            this.Location = new Point(60, 100);
+            this.Location = new Point(10, 20);
             this.Size = new Size(700, 800);
 
-            //Khởi tạo bảng CellBoard
             InitializePanel();
 
-            //
+            //Tạo các banh khi mới vào game
             GenerateNewPieces();
         }
+
+        //Khởi tạo bảng CellBoard
         public void InitializePanel()
         {
             CellBoard = new Panel();
@@ -129,6 +133,8 @@ namespace Line_98
                 {
                     //Đổi kích thước banh về kích thước ban đầu
                     Clicked_Cell.Font = new Font("Arial", BallsSize, FontStyle.Regular);
+                    FirstSelectedCell.FlatAppearance.BorderSize = 1;
+                    FirstSelectedCell.FlatAppearance.BorderColor = Color.Black;
                     ResetSelection();
                 }
                 //Không phải thì tiến hành di chuyển (Chưa code)
@@ -142,7 +148,7 @@ namespace Line_98
             if (FirstSelectedCell != null)
             {
                 FirstSelectedCell.FlatAppearance.BorderSize = 1;
-                FirstSelectedCell.FlatAppearance.BorderColor = Color.Gray;
+                FirstSelectedCell.FlatAppearance.BorderColor = Color.Black;
                 FirstSelectedCell = null;
             }
         }
@@ -181,6 +187,8 @@ namespace Line_98
             if (ColorType != 0)
             {
                 Cell.Text = "●";
+                Cell.FlatAppearance.BorderSize = 1;
+                Cell.FlatAppearance.BorderColor = Color.Black;
                 Cell.ForeColor = GameColor[ColorType];
                 //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
                 BoardColor[CellLocation.X, CellLocation.Y] = ColorType;

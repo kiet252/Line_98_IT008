@@ -34,8 +34,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 961);
+            this.ClientSize = new System.Drawing.Size(684, 761);
             this.Name = "Main_Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Line 98";
             this.Load += new System.EventHandler(this.Main_Form_Load);
             this.ResumeLayout(false);
