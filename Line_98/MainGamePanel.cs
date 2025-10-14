@@ -83,22 +83,27 @@ namespace Line_98
                     Button Cell = new Button();
                     Cell.Size = new Size(CellSize, CellSize);
                     Cell.Location = new Point(Col * CellSize, Row * CellSize);
-                    Cell.Tag = new Point(Row, Col);
-                    Cell.Font = new Font("Arial", BallsSize, FontStyle.Regular);
-                    Cell.FlatStyle = FlatStyle.Flat;
-                    Cell.TextAlign = ContentAlignment.MiddleCenter;
-                    Cell.Padding = new Padding(0);
-                    Cell.Margin = new Padding(0);
 
-                    //Lưu Cell mới tạo vào CellBoard
+                    //Mỗi Cell sẽ lưu trữ vị trí hàng - cột của bản thân nó vào Tag
+                    Cell.Tag = new Point(Row, Col);
+
+                    //.Font quyết định kích thước của quả banh (Về sau nếu làm banh bằng control khác thì có thể bỏ đi)
+                    Cell.Font = new Font("Arial", BallsSize, FontStyle.Regular);
+
+                    //Chỉnh Cell (Button) hiện tại có hình phẳng thay vì nút 3D mặc định
+                    Cell.FlatStyle = FlatStyle.Flat;
+
+                    //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
+                    /*Khi Cell được nhấp vào, Cell sẽ thực hiện hàm CellClick 
+                    -> hàm CellClick là thao tác mà Cell đó thực hiện khi được nhấp vào */
                     Cell.Click += CellClick;
 
                     //Thêm Cell vừa tạo vào CellBoard
                     CellBoard.Controls.Add(Cell);
 
-                    //Cho màu ban đầu của các ô là 0
+                    //Cho màu ban đầu của các ô là 0 (Không có ball)
                     BoardColor[Row, Col] = 0;
                 }
             }
@@ -106,7 +111,7 @@ namespace Line_98
 
         private void CellClick(object sender, EventArgs e)
         {
-            //Check xem cell vừa ấn vào có vị trí ở đâu
+            //Check xem cell vừa ấn vào có vị trí ở đâu thông qua Cell.Tag
             Button Clicked_Cell = (Button)sender;
             Point Clicked_Location = (Point)Clicked_Cell.Tag;
 
@@ -120,15 +125,16 @@ namespace Line_98
             //Trường hợp 1: Lần đầu tiên chọn ô -> Hiển thị là ô đang được chọn
             if (FirstSelectedCell == null)
             {
+                //FirstSelectedCell là biến tham chiếu đến Cell vừa được chọn
                 FirstSelectedCell = Clicked_Cell;
-                //Hiển thị ô đang được chọn có viền đỏ (Về sau có thể sửa lại)
-                //MessageBox.Show("CLicked at x = " + XCellPosition + ", y = " + YCellPosition);
+
+                //Hiển thị ô đang được chọn có kích thước gấp 1.5 ban đầu (Về sau có thể đổi lại thành animation nảy nảy hoặc khác)
                 Clicked_Cell.Font = new Font("Arial", (int)(BallsSize * 1.5), FontStyle.Bold);
             }
             else
             //Trường hợp 2: Chọn ô khác
             {
-                //Nếu ô khác chọn là ô đã được chọn, bỏ chọn
+                //Nếu ô khác chọn trùng với ô đã được chọn, bỏ chọn
                 if (FirstSelectedCell == Clicked_Cell)
                 {
                     //Đổi kích thước banh về kích thước ban đầu
@@ -136,7 +142,7 @@ namespace Line_98
                     FirstSelectedCell.FlatAppearance.BorderSize = 1;
                     FirstSelectedCell.FlatAppearance.BorderColor = Color.Black;
                     ResetSelection();
-                }
+                } 
                 //Không phải thì tiến hành di chuyển (Chưa code)
             }
 
@@ -186,7 +192,9 @@ namespace Line_98
 
             if (ColorType != 0)
             {
+                //Nếu ô không rỗng, hiến thị ball là "●" (về sau có thể đổi lại)
                 Cell.Text = "●";
+                //Dùng border để tránh việc border của Cell tự ý đổi thành ball color
                 Cell.FlatAppearance.BorderSize = 1;
                 Cell.FlatAppearance.BorderColor = Color.Black;
                 Cell.ForeColor = GameColor[ColorType];
