@@ -208,8 +208,7 @@ namespace Line_98
         private void GenerateNewPieces()
         {
             Random random = new Random();
-            //Kiểm tra xem ô nào vừa được tạo ball tại đó
-            bool[,] Visited = new bool[9, 9]; // Không cần mảng Visited vì check BoardColor là đủ 
+            //Kiểm tra xem ô nào vừa được tạo ball tại đó   
 
             //Biến SuccessCount đếm số lượng ball được tạo, nếu đủ lượng MaxBallsPerGeneration thì dừng
             int SuccessCount = 0;
@@ -226,12 +225,10 @@ namespace Line_98
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
                 int RandomColor = random.Next(1, GameColor.Length);
-                //Nếu ô đang xét đã thăm hay có một màu khác ở ô đang xét thì bỏ qua
-                if (Visited[RandomX, RandomY] || BoardColor[RandomX, RandomY] != 0) continue;
-                else
+                //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
+                if (BoardColor[RandomX, RandomY] == 0)
                 {
                     ApplyColorToCell(BoardCells[RandomX, RandomY], RandomColor);
-                    Visited[RandomX, RandomY] = true;
                     SuccessCount++;
                 }
             }
