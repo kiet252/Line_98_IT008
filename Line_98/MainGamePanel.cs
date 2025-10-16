@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -166,6 +167,40 @@ namespace Line_98
             }
         }
 
+        //Kiểm tra xem có di chuyển được đến ô đã chọn
+        private bool CanMoveBall(Point StartPoint, Point EndPoint)
+        {
+            int[] dx = { 1, -1, 0, 0 };
+            int[] dy = { 0, 0, 1, -1 };
+            bool[,] visited = new bool[9, 9];
+            //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
+            Queue<Point> CheckQueue = new Queue<Point>();
+            CheckQueue.Enqueue(StartPoint);
+            Console.WriteLine("New iteration");
+            while (CheckQueue.Count > 0)
+            {
+                Point point = CheckQueue.First();
+                CheckQueue.Dequeue();
+                
+                Console.WriteLine("x = " + point.X + ", y = " + point.Y); 
+                //Nếu đã đến được đích thì kết luận có thể đến
+                if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
+                for (int k = 0; k < 4; k++)
+                {
+                    int New_X = point.X + dx[k];
+                    int New_Y = point.Y + dy[k];
+                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] == 0)
+                    {
+                        visited[New_X, New_Y] = true;
+                        Point NextPoint = new Point(New_X, New_Y);
+                        CheckQueue.Enqueue(NextPoint);
+                    }
+                }
+            }
+            //Không đến được đích
+            return false;
+        }
+
         // Di chuyển ball từ Selected Cell đến Clicked Cell 
         private void MoveBall(Button Src, Button Des) {
             //Lấy vị trí của ô nguồn và ô đích
@@ -176,17 +211,26 @@ namespace Line_98
             Point p_Des = (Point)Des.Tag;
             int Des_x = p_Des.X;
             int Des_y = p_Des.Y;
+            //Kiểm tra xem đến được đích không
+            if (CanMoveBall(p_Src, p_Des))
+            {
+                // Lấy màu của ball từ ô nguồn
+                int color = BoardColor[Src_x, Src_y];
 
-            // Lấy màu của ball từ ô nguồn
-            int color = BoardColor[Src_x, Src_y];
+                //Xóa ball ở ô nguồn
+                BoardColor[Src_x, Src_y] = 0;
+                Src.Text = "";
+                Src.ForeColor = GameColor[0];
+                Src.Font = new Font("Arial", BallsSize, FontStyle.Regular);
 
-            //Xóa ball ở ô nguồn
-            BoardColor[Src_x, Src_y] = 0;
-            Src.Text = "";
-            Src.ForeColor = GameColor[0];
-            Src.Font = new Font("Arial", BallsSize, FontStyle.Regular);
-
-            ApplyColorToCell(Des, color);
+                ApplyColorToCell(Des, color);
+                
+            }
+            else
+            {
+                //Không đến được đích (Về sau có thể đổi thành âm thanh)
+                MessageBox.Show("Không thể di chuyển đến ô đã chọn!");
+            }
 
             this.Focus();
 
