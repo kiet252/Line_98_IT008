@@ -25,5 +25,6 @@ namespace Line_98
             mainGamePanel = new MainGamePanel(this);
             this.Controls.Add(mainGamePanel);
         }
+
     }
 }

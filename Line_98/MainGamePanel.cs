@@ -105,6 +105,9 @@ namespace Line_98
 
                     //Cho màu ban đầu của các ô là 0 (Không có ball)
                     BoardColor[Row, Col] = 0;
+
+                    // Tránh bị Tab focus 
+                    Cell.TabStop = false;
                 }
             }
         }
@@ -119,17 +122,18 @@ namespace Line_98
             int XCellPosition = Clicked_Location.X;
             int YCellPosition = Clicked_Location.Y;
 
-            //Nếu ô được chọn không có màu, không có gì xảy ra
-            if (BoardColor[XCellPosition, YCellPosition] == 0) return;
 
             //Trường hợp 1: Lần đầu tiên chọn ô -> Hiển thị là ô đang được chọn
             if (FirstSelectedCell == null)
             {
+                //Nếu ô được chọn không có màu, không có gì xảy ra
+                if (BoardColor[XCellPosition, YCellPosition] == 0) return;
+
                 //FirstSelectedCell là biến tham chiếu đến Cell vừa được chọn
                 FirstSelectedCell = Clicked_Cell;
 
                 //Hiển thị ô đang được chọn có kích thước gấp 1.5 ban đầu (Về sau có thể đổi lại thành animation nảy nảy hoặc khác)
-                Clicked_Cell.Font = new Font("Arial", (int)(BallsSize * 1.5), FontStyle.Bold);
+                FirstSelectedCell.Font = new Font("Arial", (int)(BallsSize * 1.5), FontStyle.Bold);
             }
             else
             //Trường hợp 2: Chọn ô khác
@@ -142,10 +146,52 @@ namespace Line_98
                     FirstSelectedCell.FlatAppearance.BorderSize = 1;
                     FirstSelectedCell.FlatAppearance.BorderColor = Color.Black;
                     ResetSelection();
-                } 
-                //Không phải thì tiến hành di chuyển (Chưa code)
+                }
+                //Không phải thì tiến hành di chuyển 
+                else if (Clicked_Cell.Text == "" ) {
+                    MoveBall(FirstSelectedCell, Clicked_Cell);
+                    BallEnvol();
+                    GenerateNewPieces();
+                }
             }
+            
+        }
 
+        // Phóng lớn banh 
+        private void BallEnvol() {
+            foreach (Button cell in BoardCells){
+                if (cell.Text == "●" && cell.Font.Size == BallsSize) {
+                    cell.Font = new Font("Arial", (int)(BallsSize * 1.5), FontStyle.Bold);
+                }
+            }
+        }
+
+        // Di chuyển ball từ Selected Cell đến Clicked Cell 
+        private void MoveBall(Button Src, Button Des) {
+            //Lấy vị trí của ô nguồn và ô đích
+            Point p_Src = (Point)Src.Tag;
+            int Src_x = p_Src.X;
+            int Src_y = p_Src.Y;
+
+            Point p_Des = (Point)Des.Tag;
+            int Des_x = p_Des.X;
+            int Des_y = p_Des.Y;
+
+            // Lấy màu của ball từ ô nguồn
+            int color = BoardColor[Src_x, Src_y];
+
+            //Xóa ball ở ô nguồn
+            BoardColor[Src_x, Src_y] = 0;
+            Src.Text = "";
+            Src.ForeColor = GameColor[0];
+            Src.Font = new Font("Arial", BallsSize, FontStyle.Regular);
+
+            ApplyColorToCell(Des, color);
+
+            this.Focus();
+
+            // Reset chọn sau khi di chuyển
+            ResetSelection();
         }
 
         private void ResetSelection()
@@ -163,13 +209,18 @@ namespace Line_98
         {
             Random random = new Random();
             //Kiểm tra xem ô nào vừa được tạo ball tại đó
-            bool[,] Visited = new bool[9, 9];
+            bool[,] Visited = new bool[9, 9]; // Không cần mảng Visited vì check BoardColor là đủ 
 
             //Biến SuccessCount đếm số lượng ball được tạo, nếu đủ lượng MaxBallsPerGeneration thì dừng
             int SuccessCount = 0;
 
             while (SuccessCount < MaxBallsPerGeneration)
             {
+                // Thua
+                if (Game_Lose()) {
+                    MessageBox.Show("You Lose");
+                    Environment.Exit(0);
+                }
                 //Tìm vị trí ngẫu nhiên để tạo banh
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
@@ -201,6 +252,17 @@ namespace Line_98
                 //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
                 BoardColor[CellLocation.X, CellLocation.Y] = ColorType;
             }
+        }
+
+        private bool Game_Lose() {
+
+            foreach (Button cell in BoardCells) { 
+                if(cell.Text == "") {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
