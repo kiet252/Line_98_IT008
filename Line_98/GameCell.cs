@@ -92,7 +92,8 @@ namespace Line_98
 
         public bool HasBall()
         {
-            return this.Text != "";
+            
+            return (this.Text == "●");
         }
 
         public void GetSelected()

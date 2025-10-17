@@ -197,6 +197,7 @@ namespace Line_98
                 BoardColor[Src_x, Src_y] = 0;
                 Src.RemoveBall();
 
+                BoardColor[Des_x, Des_y] = color;
                 Des.ApplyColorToCell(color);
             }
             else
