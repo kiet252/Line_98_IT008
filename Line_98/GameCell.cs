@@ -36,18 +36,18 @@ namespace Line_98
             get { return Y_Position; }
         }
 
-        public GameCell(int CellSize = 0, int BallsSize = 0, Point CellLocation = default, Point FirstPosition = default)
+        public GameCell(int CellSize = 0, int BallsSize = 0, Point CellLocationOnBoard = default, Point CellLocationToIndex = default)
         {
             //Khởi tạo kích thước của Cell
             this.Width = CellSize;
             this.Height = CellSize;
 
             //Khởi tạo vị trí của cell
-            this.Location = CellLocation;
+            this.Location = CellLocationOnBoard;
 
             //Mỗi Cell sẽ lưu trữ vị trí hàng - cột của bản thân nó vào Tag
-            this.X_Position = CellLocation.X;
-            this.Y_Position = CellLocation.Y;
+            this.X_Position = CellLocationToIndex.X;
+            this.Y_Position = CellLocationToIndex.Y;
 
             //Kích thước của banh tại ô này sẽ là BallsSize
             this.LocalBallSize = BallsSize;

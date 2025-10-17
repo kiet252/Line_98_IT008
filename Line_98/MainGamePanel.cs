@@ -99,7 +99,7 @@ namespace Line_98
             //Trường hợp 1: Lần đầu tiên chọn ô -> Hiển thị là ô đang được chọn
             if (FirstSelectedCell == null)
             {
-                //Nếu ô được chọn không có màu, không có gì xảy ra
+                //Nếu ô được chọn không có banh, không có gì xảy ra
                 if (!Clicked_Cell.HasBall()) return;
 
                 //FirstSelectedCell là biến tham chiếu đến Cell vừa được chọn
@@ -151,12 +151,15 @@ namespace Line_98
             Queue<Point> CheckQueue = new Queue<Point>();
             CheckQueue.Enqueue(StartPoint);
             Console.WriteLine("New iteration");
+            Console.WriteLine("Source: x = " + StartPoint.X  + ", y = " + StartPoint.Y);
+            Console.WriteLine("Des: x = " + EndPoint.X + ", y = " + EndPoint.Y);
             while (CheckQueue.Count > 0)
             {
                 Point point = CheckQueue.First();
                 CheckQueue.Dequeue();
 
                 Console.WriteLine("x = " + point.X + ", y = " + point.Y);
+
                 //Nếu đã đến được đích thì kết luận có thể đến
                 if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
                 for (int k = 0; k < 4; k++)
@@ -185,7 +188,7 @@ namespace Line_98
             int Des_x = Des.X_Pos;
             int Des_y = Des.Y_Pos;
             //Kiểm tra xem đến được đích không
-            if (CanMoveBall(new Point(Src.X_Pos, Src.Y_Pos), new Point(Des.X_Pos, Des.Y_Pos)))
+            if (CanMoveBall(new Point(Src_x, Src_y), new Point(Des_x, Des_y)))
             {
                 // Lấy màu của ball từ ô nguồn
                 int color = BoardColor[Src_x, Src_y];
