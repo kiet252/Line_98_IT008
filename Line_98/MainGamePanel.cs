@@ -136,7 +136,7 @@ namespace Line_98
             {
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] != 0)
                 {
-                    cell.Font = new Font("Arial", (int)(BallsSize * 1.5), FontStyle.Bold);
+                    cell.BallToEnlarged();
                 }
             }
         }
@@ -198,7 +198,6 @@ namespace Line_98
                 Src.RemoveBall();
 
                 Des.ApplyColorToCell(color);
-
             }
             else
             {

@@ -78,8 +78,11 @@ namespace Line_98
         public void BallToDefault()
         {
             this.Font = new Font("Arial", LocalBallSize, FontStyle.Regular);
-            this.FlatAppearance.BorderSize = 1;
-            this.FlatAppearance.BorderColor = Color.Black;
+        }
+
+        public void BallToEnlarged()
+        {
+            this.Font = new Font("Arial", (int)(LocalBallSize * 1.5), FontStyle.Regular);
         }
 
         public void RemoveBall()
