@@ -46,13 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainGamePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Main_Form.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Main_Form.Designer.cs">
       <DependentUpon>Main_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainGamePanel.cs">
+    <Compile Include="GameCell.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />
