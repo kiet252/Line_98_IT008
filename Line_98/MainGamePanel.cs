@@ -150,9 +150,7 @@ namespace Line_98
             //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
             Queue<Point> CheckQueue = new Queue<Point>();
             CheckQueue.Enqueue(StartPoint);
-            Console.WriteLine("New iteration");
-            Console.WriteLine("Source: x = " + StartPoint.X  + ", y = " + StartPoint.Y);
-            Console.WriteLine("Des: x = " + EndPoint.X + ", y = " + EndPoint.Y);
+            
             while (CheckQueue.Count > 0)
             {
                 Point point = CheckQueue.First();

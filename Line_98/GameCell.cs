@@ -23,6 +23,8 @@ namespace Line_98
 
         //Kích thước từng banh trong ô
         private int LocalBallSize;
+
+        //Lưu vị trí của Cell theo index
         private int X_Position;
         private int Y_Position;
 
