@@ -14,11 +14,12 @@ namespace Line_98
         //Màu các quả banh
         static internal Color[] GameColor = {
             Color.LightGray, //Màu ô rỗng
-            Color.Red, // 1
+            Color.Red,
+            Color.Green,// 1
             Color.Blue,// 2
-            Color.Green, // 3
+            Color.Gold, // 3
             Color.DarkRed, // 4
-            Color.Purple // 5
+            Color.Magenta // 5
         };
 
         //Kích thước từng banh trong ô
@@ -67,10 +68,11 @@ namespace Line_98
         public void ApplyColorToCell(int ColorType = 0)
         {
 
-            if (ColorType != 0)
+            if (ColorType > 0)
             {
                 //Nếu ô không rỗng, hiến thị ball là "●" (về sau có thể đổi lại)
                 this.Text = "●";
+                this.BallToEnlarged();
                 //Dùng border để tránh việc border của Cell tự ý đổi thành ball color
                 this.GetUnselected();
                 this.ForeColor = GameColor[ColorType];
@@ -90,12 +92,6 @@ namespace Line_98
         public void RemoveBall()
         {
             this.Text = "";
-        }
-
-        public bool HasBall()
-        {
-            
-            return (this.Text == "●");
         }
 
         public void GetSelected()

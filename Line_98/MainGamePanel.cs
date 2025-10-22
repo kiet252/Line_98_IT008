@@ -26,7 +26,8 @@ namespace Line_98
         private int[,] BoardColor = new int[9, 9];
 
         //Hằng quyết định số lượng banh mới mỗi lần tạo
-        private const int MaxBallsPerGeneration = 5;
+        private const int MaxBallsPerGeneration = 3;
+        private const int MaxBallsPerInitialization = 7;
 
         //Hằng quyết định kích cỡ các quả banh
         private const int BallsSize = 30;
@@ -45,6 +46,9 @@ namespace Line_98
             InitializePanel();
 
             //Tạo các banh khi mới vào game
+            GenerateFirstPieces();
+
+            //Tạo các banh chuẩn bị biến thành banh to
             GenerateNewPieces();
         }
 
@@ -53,7 +57,7 @@ namespace Line_98
         {
             CellBoard = new Panel();
             CellBoard.Size = new Size(630, 630);
-            CellBoard.BackColor = Color.WhiteSmoke;
+            CellBoard.BackColor = Main_Form.BackColor;
             CellBoard.Location = new Point(20, 100);
 
             //Thêm bảng CellBoard vào Form
@@ -74,7 +78,6 @@ namespace Line_98
                 {
                     //Khởi tạo từng Cell
                     GameCell Cell = new GameCell(CellSize, BallsSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
-
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
@@ -99,8 +102,8 @@ namespace Line_98
             //Trường hợp 1: Lần đầu tiên chọn ô -> Hiển thị là ô đang được chọn
             if (FirstSelectedCell == null)
             {
-                //Nếu ô được chọn không có banh, không có gì xảy ra
-                if (!Clicked_Cell.HasBall()) return;
+                //Nếu ô được chọn không có banh hoặc là banh bé, không có gì xảy ra
+                if (BoardColor[Clicked_Cell.X_Pos, Clicked_Cell.Y_Pos] <= 0) return;
 
                 //FirstSelectedCell là biến tham chiếu đến Cell vừa được chọn
                 FirstSelectedCell = Clicked_Cell;
@@ -119,65 +122,21 @@ namespace Line_98
                     ResetSelection();
                 }
                 //Không phải thì tiến hành di chuyển 
-                else if (Clicked_Cell.Text == "")
+                else if (BoardColor[Clicked_Cell.X_Pos, Clicked_Cell.Y_Pos] <= 0)
                 {
-                    MoveBall(FirstSelectedCell, Clicked_Cell);
-                    BallEnvol();
-                    GenerateNewPieces();
-                }
-            }
-
-        }
-
-        // Phóng lớn banh 
-        private void BallEnvol()
-        {
-            foreach (GameCell cell in BoardCells)
-            {
-                if (BoardColor[cell.X_Pos, cell.Y_Pos] != 0)
-                {
-                    cell.BallToEnlarged();
-                }
-            }
-        }
-
-        //Kiểm tra xem có di chuyển được đến ô đã chọn
-        private bool CanMoveBall(Point StartPoint, Point EndPoint)
-        {
-            int[] dx = { 1, -1, 0, 0 };
-            int[] dy = { 0, 0, 1, -1 };
-            bool[,] visited = new bool[9, 9];
-            //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
-            Queue<Point> CheckQueue = new Queue<Point>();
-            CheckQueue.Enqueue(StartPoint);
-            
-            while (CheckQueue.Count > 0)
-            {
-                Point point = CheckQueue.First();
-                CheckQueue.Dequeue();
-
-                Console.WriteLine("x = " + point.X + ", y = " + point.Y);
-
-                //Nếu đã đến được đích thì kết luận có thể đến
-                if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
-                for (int k = 0; k < 4; k++)
-                {
-                    int New_X = point.X + dx[k];
-                    int New_Y = point.Y + dy[k];
-                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] == 0)
+                    //Di chuyển thành công thì mới tạo banh mới
+                    if (MoveBall(FirstSelectedCell, Clicked_Cell))
                     {
-                        visited[New_X, New_Y] = true;
-                        Point NextPoint = new Point(New_X, New_Y);
-                        CheckQueue.Enqueue(NextPoint);
-                    }
+                        BallEnvol();
+                        GenerateNewPieces();
+                    }              
                 }
             }
-            //Không đến được đích
-            return false;
+
         }
 
         // Di chuyển ball từ Selected Cell đến Clicked Cell 
-        private void MoveBall(GameCell Src, GameCell Des)
+        private bool MoveBall(GameCell Src, GameCell Des)
         {
             //Lấy vị trí của ô nguồn và ô đích
             int Src_x = Src.X_Pos;
@@ -185,8 +144,11 @@ namespace Line_98
 
             int Des_x = Des.X_Pos;
             int Des_y = Des.Y_Pos;
+
             //Kiểm tra xem đến được đích không
-            if (CanMoveBall(new Point(Src_x, Src_y), new Point(Des_x, Des_y)))
+            bool CanMoveToDes = CanMoveBall(new Point(Src_x, Src_y), new Point(Des_x, Des_y));
+            
+            if (CanMoveToDes)
             {
                 // Lấy màu của ball từ ô nguồn
                 int color = BoardColor[Src_x, Src_y];
@@ -205,18 +167,63 @@ namespace Line_98
             }
 
             this.Focus();
-
             // Reset chọn sau khi di chuyển
             ResetSelection();
+            return CanMoveToDes;
         }
 
-        private void ResetSelection()
+        //Kiểm tra xem có di chuyển được đến ô đã chọn
+        private bool CanMoveBall(Point StartPoint, Point EndPoint)
         {
-            // Bỏ đánh dấu ô cũ
-            if (FirstSelectedCell != null)
+            int[] dx = { 1, -1, 0, 0 };
+            int[] dy = { 0, 0, 1, -1 };
+            bool[,] visited = new bool[9, 9];
+            //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
+            Queue<Point> CheckQueue = new Queue<Point>();
+            CheckQueue.Enqueue(StartPoint);
+
+            while (CheckQueue.Count > 0)
             {
-                FirstSelectedCell.GetUnselected();
-                FirstSelectedCell = null;
+                Point point = CheckQueue.First();
+                CheckQueue.Dequeue();
+
+                //Console.WriteLine("x = " + point.X + ", y = " + point.Y);
+
+                //Nếu đã đến được đích thì kết luận có thể đến
+                if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
+                for (int k = 0; k < 4; k++)
+                {
+                    int New_X = point.X + dx[k];
+                    int New_Y = point.Y + dy[k];
+                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] <= 0)
+                    {
+                        visited[New_X, New_Y] = true;
+                        Point NextPoint = new Point(New_X, New_Y);
+                        CheckQueue.Enqueue(NextPoint);
+                    }
+                }
+            }
+            //Không đến được đích
+            return false;
+        }
+
+        private void GenerateFirstPieces()
+        {
+            Random random = new Random();
+            for (int i = 0; i < MaxBallsPerInitialization; i++)
+            {
+                //Tìm vị trí ngẫu nhiên để tạo banh
+                int RandomX = random.Next(0, 9);
+                int RandomY = random.Next(0, 9);
+                //Chọn màu ngẫu nhiên cho banh
+                int RandomColor = random.Next(1, GameCell.GameColor.Length);
+                //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
+                if (BoardColor[RandomX, RandomY] == 0)
+                {
+                    BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
+                    //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
+                    BoardColor[RandomX, RandomY] = RandomColor;
+                }
             }
         }
 
@@ -245,10 +252,34 @@ namespace Line_98
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
                     BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
+                    BoardCells[RandomX, RandomY].BallToDefault();
                     //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
-                    BoardColor[RandomX, RandomY] = RandomColor;
+                    BoardColor[RandomX, RandomY] = -RandomColor;
                     SuccessCount++;
                 }
+            }
+        }
+
+        // Phóng lớn banh đang chuẩn bị xuất hiện
+        private void BallEnvol()
+        {
+            foreach (GameCell cell in BoardCells)
+            {
+                if (BoardColor[cell.X_Pos, cell.Y_Pos] < 0)
+                {
+                    cell.BallToEnlarged();
+                    BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos];
+                }
+            }
+        }      
+
+        private void ResetSelection()
+        {
+            // Bỏ đánh dấu ô cũ
+            if (FirstSelectedCell != null)
+            {
+                FirstSelectedCell.GetUnselected();
+                FirstSelectedCell = null;
             }
         }
 
@@ -257,7 +288,7 @@ namespace Line_98
 
             foreach (GameCell cell in BoardCells)
             {
-                if (!cell.HasBall())
+                if (BoardColor[cell.X_Pos, cell.Y_Pos] == 0)
                 {
                     return false;
                 }
