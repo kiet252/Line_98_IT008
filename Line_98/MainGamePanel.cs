@@ -25,6 +25,17 @@ namespace Line_98
         //Lưu màu quân cờ
         private int[,] BoardColor = new int[9, 9];
 
+        //Màu các quả banh
+        static internal Color[] GameColor = {
+            Color.LightGray, //Màu ô rỗng
+            Color.Red,
+            Color.Green,// 1
+            Color.Blue,// 2
+            Color.Gold, // 3
+            Color.DarkRed, // 4
+            Color.Magenta // 5
+        };
+
         //Hằng quyết định số lượng banh mới mỗi lần tạo
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
@@ -216,7 +227,7 @@ namespace Line_98
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = random.Next(1, GameCell.GameColor.Length);
+                int RandomColor = random.Next(1, GameColor.Length);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
@@ -247,7 +258,7 @@ namespace Line_98
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = random.Next(1, GameCell.GameColor.Length);
+                int RandomColor = random.Next(1, GameColor.Length);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
                 if (BoardColor[RandomX, RandomY] == 0)
                 {

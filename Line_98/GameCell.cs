@@ -11,16 +11,7 @@ namespace Line_98
     
     internal class GameCell : Button
     {
-        //Màu các quả banh
-        static internal Color[] GameColor = {
-            Color.LightGray, //Màu ô rỗng
-            Color.Red,
-            Color.Green,// 1
-            Color.Blue,// 2
-            Color.Gold, // 3
-            Color.DarkRed, // 4
-            Color.Magenta // 5
-        };
+        
 
         //Kích thước từng banh trong ô
         private int LocalBallSize;
@@ -75,7 +66,7 @@ namespace Line_98
                 this.BallToEnlarged();
                 //Dùng border để tránh việc border của Cell tự ý đổi thành ball color
                 this.GetUnselected();
-                this.ForeColor = GameColor[ColorType];
+                this.ForeColor = MainGamePanel.GameColor[ColorType];
             }
         }
 
