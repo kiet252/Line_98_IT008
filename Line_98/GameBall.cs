@@ -11,16 +11,17 @@ namespace Line_98
     internal class GameBall : PictureBox
     {
         private Color MyColor;
-        private const double BallScale = 1.5;
+        private const double BallScale = 2.5;
 
         //Hằng quyết định kích cỡ các quả banh
-        private const int BallRadius = 10;
+        private const int BallRadius = 8;
 
         public GameBall(Color NewColor)
         {
             MyColor = NewColor;
 
             this.BackColor = Color.Transparent;
+            //Chiều rộng và cao của ball = 2 lần bán kính của ball
             this.Width = BallRadius * 2;
             this.Height = BallRadius * 2;
             this.Enabled = false;
@@ -36,6 +37,7 @@ namespace Line_98
                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
             }
+            //using sẽ tự dộng giải phóng bộ nhớ brush 
         }
 
         public void Enlarge()

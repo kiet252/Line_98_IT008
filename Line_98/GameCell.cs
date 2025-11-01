@@ -43,10 +43,6 @@ namespace Line_98
             //Khởi tạo Ball tại cell
             Ball = new GameBall(MainGamePanel.GameColor[0]);
             Ball.Visible = false;
-            Ball.Location = new Point(
-                (this.Width - Ball.Width) / 2,
-                (this.Height - Ball.Height) / 2
-            );
             this.Controls.Add(Ball);
 
             //.Font quyết định kích thước của quả banh (Về sau nếu làm banh bằng control khác thì có thể bỏ đi)
@@ -71,14 +67,27 @@ namespace Line_98
             }
         }
 
+        private void CenterBall()
+        {
+            if (Ball != null)
+            {
+                Ball.Location = new Point(
+                    (this.Width - Ball.Width) / 2,
+                    (this.Height - Ball.Height) / 2
+                );
+            }
+        }
+
         public void BallToEnlarged()
         {
             Ball.Enlarge();
+            CenterBall();
         }
 
         public void BallToDefault()
         {
             Ball.ToDefault();
+            CenterBall();
         }
 
         public void RemoveBall()
