@@ -11,11 +11,8 @@ namespace Line_98
     
     internal class GameCell : Button
     {
-        
-
-        //Kích thước từng banh trong ô
-        private int LocalBallSize;
-
+        //Tạo Ball tại Cell
+        private GameBall Ball;
         //Lưu vị trí của Cell theo index
         private int X_Position;
         private int Y_Position;
@@ -30,7 +27,7 @@ namespace Line_98
             get { return Y_Position; }
         }
 
-        public GameCell(int CellSize = 0, int BallsSize = 0, Point CellLocationOnBoard = default, Point CellLocationToIndex = default)
+        public GameCell(int CellSize = 0, Point CellLocationOnBoard = default, Point CellLocationToIndex = default)
         {
             //Khởi tạo kích thước của Cell
             this.Width = CellSize;
@@ -43,11 +40,17 @@ namespace Line_98
             this.X_Position = CellLocationToIndex.X;
             this.Y_Position = CellLocationToIndex.Y;
 
-            //Kích thước của banh tại ô này sẽ là BallsSize
-            this.LocalBallSize = BallsSize;
+            //Khởi tạo Ball tại cell
+            Ball = new GameBall(MainGamePanel.GameColor[0]);
+            Ball.Visible = false;
+            Ball.Location = new Point(
+                (this.Width - Ball.Width) / 2,
+                (this.Height - Ball.Height) / 2
+            );
+            this.Controls.Add(Ball);
 
             //.Font quyết định kích thước của quả banh (Về sau nếu làm banh bằng control khác thì có thể bỏ đi)
-            this.Font = new Font("Arial", BallsSize, FontStyle.Regular);
+            //this.Font = new Font("Arial", BallsSize, FontStyle.Regular);
 
             //Chỉnh Cell (Button) hiện tại có hình phẳng thay vì nút 3D mặc định
             this.FlatStyle = FlatStyle.Flat;
@@ -61,28 +64,26 @@ namespace Line_98
 
             if (ColorType > 0)
             {
-                //Nếu ô không rỗng, hiến thị ball là "●" (về sau có thể đổi lại)
-                this.Text = "●";
-                this.BallToEnlarged();
-                //Dùng border để tránh việc border của Cell tự ý đổi thành ball color
+                //Nếu ô không rỗng, hiến thị ball
+                Ball.Visible = true;
+                Ball.myColor = MainGamePanel.GameColor[ColorType];
                 this.GetUnselected();
-                this.ForeColor = MainGamePanel.GameColor[ColorType];
             }
-        }
-
-        public void BallToDefault()
-        {
-            this.Font = new Font("Arial", LocalBallSize, FontStyle.Regular);
         }
 
         public void BallToEnlarged()
         {
-            this.Font = new Font("Arial", (int)(LocalBallSize * 1.5), FontStyle.Regular);
+            Ball.Enlarge();
+        }
+
+        public void BallToDefault()
+        {
+            Ball.ToDefault();
         }
 
         public void RemoveBall()
         {
-            this.Text = "";
+            Ball.Visible = false;
         }
 
         public void GetSelected()

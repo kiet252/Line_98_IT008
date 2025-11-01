@@ -40,9 +40,6 @@ namespace Line_98
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
 
-        //Hằng quyết định kích cỡ các quả banh
-        private const int BallsSize = 30;
-
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private GameCell FirstSelectedCell = null;
 
@@ -88,7 +85,7 @@ namespace Line_98
                 for (int Col = 0; Col < 9; Col++)
                 {
                     //Khởi tạo từng Cell
-                    GameCell Cell = new GameCell(CellSize, BallsSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
+                    GameCell Cell = new GameCell(CellSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
@@ -170,6 +167,7 @@ namespace Line_98
 
                 BoardColor[Des_x, Des_y] = color;
                 Des.ApplyColorToCell(color);
+                Des.BallToEnlarged();
             }
             else
             {
@@ -232,6 +230,7 @@ namespace Line_98
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
                     BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
+                    BoardCells[RandomX, RandomY].BallToEnlarged();
                     //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
                     BoardColor[RandomX, RandomY] = RandomColor;
                 }
