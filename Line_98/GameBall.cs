@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,15 +30,19 @@ namespace Line_98
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            //Yêu cầu vẽ các phần của GameCell trước khi vẽ ball
             base.OnPaint(e);
-            //Vẽ ball
-            using (SolidBrush brush = new SolidBrush(MyColor))
+
+            var rect = new Rectangle(0, 0, Width, Height);
+            using (var brush = new LinearGradientBrush(
+                rect,
+                ColorExtensions.Lighten(MyColor, 0.3f),
+                ColorExtensions.Darken(MyColor, 0.5f),
+                LinearGradientMode.BackwardDiagonal
+            ))
             {
                 e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
             }
-            //using sẽ tự dộng giải phóng bộ nhớ brush 
         }
 
         public void Enlarge()

@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Line_98
+{
+    public static class ColorExtensions
+    {
+        public static Color Lighten(this Color color, float factor)
+        {
+            return Color.FromArgb(
+                color.A,
+                Math.Min(255, (int)(color.R + (255 - color.R) * factor)),
+                Math.Min(255, (int)(color.G + (255 - color.G) * factor)),
+                Math.Min(255, (int)(color.B + (255 - color.B) * factor))
+            );
+        }
+
+        public static Color Darken(this Color color, float factor)
+        {
+            return Color.FromArgb(
+                color.A,
+                Math.Max(0, (int)(color.R * (1 - factor))),
+                Math.Max(0, (int)(color.G * (1 - factor))),
+                Math.Max(0, (int)(color.B * (1 - factor)))
+            );
+        }
+    }
+}
