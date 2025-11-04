@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameBall.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MainGamePanel.cs">
       <SubType>Component</SubType>
     </Compile>

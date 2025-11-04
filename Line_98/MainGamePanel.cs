@@ -25,12 +25,20 @@ namespace Line_98
         //Lưu màu quân cờ
         private int[,] BoardColor = new int[9, 9];
 
+        //Màu các quả banh
+        static internal Color[] GameColor = {
+            Color.LightGray, //Màu ô rỗng
+            Color.Red,
+            Color.Green,// 1
+            Color.Blue,// 2
+            Color.Gold, // 3
+            Color.DarkRed, // 4
+            Color.Magenta // 5
+        };
+
         //Hằng quyết định số lượng banh mới mỗi lần tạo
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
-
-        //Hằng quyết định kích cỡ các quả banh
-        private const int BallsSize = 30;
 
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private GameCell FirstSelectedCell = null;
@@ -77,7 +85,7 @@ namespace Line_98
                 for (int Col = 0; Col < 9; Col++)
                 {
                     //Khởi tạo từng Cell
-                    GameCell Cell = new GameCell(CellSize, BallsSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
+                    GameCell Cell = new GameCell(CellSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
@@ -159,6 +167,7 @@ namespace Line_98
 
                 BoardColor[Des_x, Des_y] = color;
                 Des.ApplyColorToCell(color);
+                Des.BallToEnlarged();
             }
             else
             {
@@ -216,11 +225,12 @@ namespace Line_98
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = random.Next(1, GameCell.GameColor.Length);
+                int RandomColor = random.Next(1, GameColor.Length);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
                     BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
+                    BoardCells[RandomX, RandomY].BallToEnlarged();
                     //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
                     BoardColor[RandomX, RandomY] = RandomColor;
                 }
@@ -247,7 +257,7 @@ namespace Line_98
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = random.Next(1, GameCell.GameColor.Length);
+                int RandomColor = random.Next(1, GameColor.Length);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
