@@ -33,7 +33,8 @@ namespace Line_98
             Color.Blue,// 2
             Color.Gold, // 3
             Color.DarkRed, // 4
-            Color.Magenta // 5
+            Color.Magenta, // 5
+            Color.Cyan //6
         };
 
         //Hằng quyết định số lượng banh mới mỗi lần tạo
