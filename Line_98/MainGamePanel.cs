@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Media;
 
 namespace Line_98
 {
@@ -29,12 +30,15 @@ namespace Line_98
         static internal Color[] GameColor = {
             Color.LightGray, //Màu ô rỗng
             Color.Red,
-            Color.Green,// 1
-            Color.Blue,// 2
-            Color.Gold, // 3
-            Color.DarkRed, // 4
-            Color.Magenta // 5
+            //Color.Green,// 1
+            //Color.Blue,// 2
+            //Color.Gold, // 3
+            //Color.DarkRed, // 4
+            //Color.Magenta // 5
         };
+
+        // Điểm số
+        private int gameScore;
 
         //Hằng quyết định số lượng banh mới mỗi lần tạo
         private const int MaxBallsPerGeneration = 3;
@@ -80,6 +84,10 @@ namespace Line_98
 
         void InitializeBoard()
         {
+
+            // Bắt đầu tính điểm
+            gameScore = 0;
+
             for (int Row = 0; Row < 9; Row++)
             {
                 for (int Col = 0; Col < 9; Col++)
@@ -143,7 +151,12 @@ namespace Line_98
 
         }
 
-        // Di chuyển ball từ Selected Cell đến Clicked Cell 
+        /// <summary>
+        /// Di chuyển ball từ Selected Cell đến Clicked Cell 
+        /// </summary>
+        /// <param name="Src"></param>
+        /// <param name="Des"></param>
+        /// <returns></returns>
         private bool MoveBall(GameCell Src, GameCell Des)
         {
             //Lấy vị trí của ô nguồn và ô đích
@@ -167,7 +180,14 @@ namespace Line_98
 
                 BoardColor[Des_x, Des_y] = color;
                 Des.ApplyColorToCell(color);
-                Des.BallToEnlarged();
+
+                int gamePoint = CheckAndRemoveBall(Des);
+                if (gamePoint > 0) {
+                    // Hiển thị điểm lên Main_Form
+                    gameScore += ((gamePoint - 4) * (gamePoint - 4));
+                    Main_Form.UpdateScore(gameScore);
+                } else
+                    Des.BallToEnlarged();
             }
             else
             {
@@ -270,7 +290,9 @@ namespace Line_98
             }
         }
 
-        // Phóng lớn banh đang chuẩn bị xuất hiện
+        /// <summary>
+        /// Phóng lớn banh đang chuẩn bị xuất hiện
+        /// </summary>
         private void BallEnvol()
         {
             foreach (GameCell cell in BoardCells)
@@ -278,7 +300,15 @@ namespace Line_98
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] < 0)
                 {
                     cell.BallToEnlarged();
-                    BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos];
+                    BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos]; // ? tại sao âm vậy ?
+
+                    // Hiển thị điểm lên Main_Form
+                    int gamePoint = CheckAndRemoveBall(cell);
+                    if (gamePoint > 0) {
+                        // Hiển thị điểm lên Main_Form
+                        gameScore += ((gamePoint - 4) * (gamePoint - 4));
+                        Main_Form.UpdateScore(gameScore);
+                    }
                 }
             }
         }      
@@ -293,6 +323,12 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// Kiểm tra thua khi tất cả các ô đều có banh 
+        /// </summary>
+        /// <returns>
+        /// true nếu thua, false nếu chưa thua
+        /// </returns>
         private bool Game_Lose()
         {
 
@@ -305,6 +341,71 @@ namespace Line_98
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Kiểm tra xem có ăn được banh không 
+        /// </summary>
+        /// <param name="Src"></param>
+        /// <returns>
+        /// Trả về số banh ăn được
+        /// </returns>
+        int CheckAndRemoveBall(GameCell Src) {
+            int r = Src.X_Pos;
+            int c = Src.Y_Pos;
+            int color = BoardColor[r, c];
+
+            int g_Point = 0; // Điểm số là số banh ăn được 
+
+            // Các hướng: ngang, dọc, chéo chính, chéo phụ
+            int[] dx = { 0, 1, 1, 1 };
+            int[] dy = { 1, 0, 1, -1 };
+            bool isRemoveable = false;
+            List<GameCell> toRemove = new List<GameCell>();
+
+            for(int dir = 0; dir < 4; ++dir) {
+                List<GameCell> line = new List<GameCell>();
+                line.Add(Src);
+
+                // đi xuôi hướng
+                int x = r + dx[dir];
+                int y = c + dy[dir];
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardCells[x, y].isLargedBall()) { 
+                    line.Add(BoardCells[x, y]);
+                    x += dx[dir];
+                    y += dy[dir];
+                }
+
+                // đi ngược hướng
+                x = r - dx[dir];
+                y = c - dy[dir];
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardCells[x, y].isLargedBall()) {
+                    line.Add(BoardCells[x, y]);
+                    x -= dx[dir];
+                    y -= dy[dir];
+                }
+
+                // Nếu có ≥ 5 quả liên tiếp cùng màu
+                if(line.Count >= 5) {
+                    isRemoveable = true;
+                    foreach(GameCell cell in line) {
+                        toRemove.Add(cell);
+                    }
+                }
+            }
+            
+            // Xóa banh
+            if (isRemoveable) {
+                g_Point += toRemove.Count;
+                foreach(GameCell cell in toRemove) {
+                    BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
+                    cell.RemoveBall();
+                }
+                SoundPlayer player = new SoundPlayer(Properties.Resources.ding); // Âm thanh ding.wav
+                player.Play();
+            }
+
+            return g_Point;
         }
     }
 }

@@ -90,6 +90,14 @@ namespace Line_98
             CenterBall();
         }
 
+        /// <summary>
+        /// Kiểm tra xem banh hiện tại đã phóng lớn chưa 
+        /// </summary>
+        /// <returns><see langword="true"/> nếu banh đã được phóng lớn ; ngược lại, <see langword="false"/>.</returns>
+        public bool isLargedBall() {
+            return Ball.isLargedBall();
+        }
+
         public void RemoveBall()
         {
             Ball.Visible = false;

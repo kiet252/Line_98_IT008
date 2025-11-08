@@ -26,5 +26,8 @@ namespace Line_98
             this.Controls.Add(mainGamePanel);
         }
 
+        public void UpdateScore(int newScore) {
+            this.Score.Text = "Score: " + newScore.ToString();
+        }
     }
 }
