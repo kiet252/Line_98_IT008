@@ -30,11 +30,12 @@ namespace Line_98
         static internal Color[] GameColor = {
             Color.LightGray, //Màu ô rỗng
             Color.Red,
-            //Color.Green,// 1
-            //Color.Blue,// 2
-            //Color.Gold, // 3
-            //Color.DarkRed, // 4
-            //Color.Magenta // 5
+            Color.Green,// 1
+            Color.Blue,// 2
+            Color.Gold, // 3
+            Color.DarkRed, // 4
+            Color.Magenta, // 5
+            Color.Cyan //6
         };
 
         // Điểm số
