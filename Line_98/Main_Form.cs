@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace Line_98
 {
     
     public partial class Main_Form : Form
     {
+
         MainGamePanel mainGamePanel;
         public Main_Form()
         {
@@ -24,10 +24,6 @@ namespace Line_98
         {
             mainGamePanel = new MainGamePanel(this);
             this.Controls.Add(mainGamePanel);
-        }
-
-        public void UpdateScore(int newScore) {
-            this.Score.Text = "Score: " + newScore.ToString();
         }
     }
 }
