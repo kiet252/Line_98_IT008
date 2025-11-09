@@ -53,6 +53,17 @@ namespace Line_98
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Kiểm tra xem banh có được phóng lớn chưa 
+        /// </summary>
+        /// <returns><see langword="true"/> Nếu banh đã được phóng lớn ; ngược lại, <see
+        /// langword="false"/>.</returns>
+        public bool isLargedBall() {
+            if(Width == BallRadius * 2 * BallScale)
+                return true;
+            return false;
+        }
+
         public void ToDefault()
         {
             this.Width = BallRadius * 2;
