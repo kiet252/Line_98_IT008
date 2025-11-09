@@ -55,6 +55,10 @@ namespace Line_98
             this.TabStop = false;
         }
 
+        /// <summary>
+        /// Đổi màu của banh tại ô đang xét
+        /// </summary>
+        /// <param name="ColorType"></param>
         public void ApplyColorToCell(int ColorType = 0)
         {
 
@@ -67,6 +71,9 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// Đưa banh vào vị trí giữa ô sau khi banh được phóng to/thu nhỏ
+        /// </summary>
         private void CenterBall()
         {
             if (Ball != null)
@@ -78,12 +85,17 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// Phóng to banh tại ô đang xét
+        /// </summary>
         public void BallToEnlarged()
         {
             Ball.Enlarge();
             CenterBall();
         }
-
+        /// <summary>
+        /// Thu nhỏ banh tại ô đang xét
+        /// </summary>
         public void BallToDefault()
         {
             Ball.ToDefault();
@@ -98,17 +110,26 @@ namespace Line_98
             return Ball.isLargedBall();
         }
 
+        /// <summary>
+        /// Xóa banh đi tại ô đang xét (Trường hợp màu tại ô đang xét là 0)
+        /// </summary>
         public void RemoveBall()
         {
             Ball.Visible = false;
         }
 
+        /// <summary>
+        /// Hiển thị ô đang xét đang được chọn
+        /// </summary>
         public void GetSelected()
         {
             this.FlatAppearance.BorderSize = 3;
             this.FlatAppearance.BorderColor = Color.Red;
         }
 
+        /// <summary>
+        /// Hiển thị ô đang xét bị bỏ chọn
+        /// </summary>
         public void GetUnselected()
         {
             this.FlatAppearance.BorderSize = 1;

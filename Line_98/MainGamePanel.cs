@@ -4,6 +4,7 @@ using System.Data.SqlTypes;
 using System.Drawing;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -26,18 +27,35 @@ namespace Line_98
         private Panel CellBoard;
         private int CellSize = 0;
 
-        //Lưu màu quân cờ
+        /// <summary>
+        /// Lưu màu quân cờ. 
+        /// </summary>
+        /// <remarks>
+        /// Mỗi ô có các trạng thái:
+        /// <list type="bullet">
+        /// <item><description>0: Ô trống, không có banh</description></item>
+        /// <item><description>Giá trị âm: Ô chứa banh nhỏ</description></item>
+        /// <item><description>Giá trị dương: Ô chứa banh lớn</description></item>
+        /// </list>
+        /// </remarks>
         private int[,] BoardColor = new int[9, 9];
 
-        //Màu các quả banh
+        /// <summary>
+        /// Mảng màu sắc cho các quả banh trong game
+        /// </summary>
+        /// <remarks>
+        /// Hệ thống tự động nhận biết khi thêm/bớt màu
+        /// Không xóa Color.LightGray (index 0, tượng trưng cho ô rỗng)
+        /// </remarks>
         static internal Color[] GameColor = {
-            Color.LightGray, //Màu ô rỗng
+            Color.LightGray, //0 - Màu ô rỗng (Không xóa!)
             Color.Red,
-            //Color.Green,// 1
-            //Color.Blue,// 2
-            //Color.Gold, // 3
-            //Color.DarkRed, // 4
-            //Color.Magenta // 5
+            Color.Green,
+            Color.Blue,
+            Color.Gold,
+            Color.DarkRed,
+            Color.Magenta,
+            Color.Cyan
         };
 
         // Điểm số
@@ -46,6 +64,22 @@ namespace Line_98
         //Hằng quyết định số lượng banh mới mỗi lần tạo
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
+
+        /// <summary>
+        /// Bảng ánh xạ điểm cho số lượng banh thẳng hàng
+        /// </summary>
+        /// <remarks>
+        /// Index: số banh, Value: điểm tương ứng
+        /// Ví dụ: scores[5] = 5, scores[6] = 11, ...
+        /// </remarks>
+        private readonly Dictionary<int, int> ScoreMap = new Dictionary<int, int>
+        {
+            {5, 5},
+            {6, 11},
+            {7, 18},
+            {8, 26},
+            {9, 35}
+        };
 
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private GameCell FirstSelectedCell = null;
@@ -69,10 +103,28 @@ namespace Line_98
 
             //Tạo PictureBox cho điểm hiện tại 
             BuildCurrentScore();
+            //Tạo PictureBox cho điểm cao nhất 
+            BuildHighestScore();
 
-            //Hiển thị điểm lên Panel 
+            //Hiển thị điểm hiện tại lên Panel 
             RepaintCurrentScore();
+            //Hiển thị điểm cao nhất lên Panel 
+            RepaintHighestScore();
 
+            this.Invalidate();
+        }
+
+        /// <summary>
+        /// Đặt nền đen tăng tương phản cho hiển thị điểm số 
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+
+            using (SolidBrush brush = new SolidBrush(Color.Black)) {
+                Rectangle rect = new Rectangle(0, 8, this.Width, 70);
+                e.Graphics.FillRectangle(brush, rect);
+            }
         }
 
         //Khởi tạo bảng CellBoard
@@ -109,8 +161,7 @@ namespace Line_98
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
-                    /*Khi Cell được nhấp vào, Cell sẽ thực hiện hàm CellClick 
-                    -> hàm CellClick là thao tác mà Cell đó thực hiện khi được nhấp vào */
+                    //Khi Cell được nhấp vào, Cell sẽ thực hiện hàm CellClick 
                     Cell.Click += CellClick;
 
                     //Thêm Cell vừa tạo vào CellBoard
@@ -122,6 +173,11 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// thao tác mà Cell đó thực hiện khi được nhấp vào
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CellClick(object sender, EventArgs e)
         {
             //Check xem cell vừa ấn vào có vị trí ở đâu thông qua Cell.Tag
@@ -155,8 +211,13 @@ namespace Line_98
                     //Di chuyển thành công thì mới tạo banh mới
                     if (MoveBall(FirstSelectedCell, Clicked_Cell))
                     {
-                        BallEnvol();
-                        GenerateNewPieces();
+                        int gamePoint = CheckAndRemoveBall(Clicked_Cell);
+                        if (gamePoint > 0)
+                            ScoreAndDisplayUpdate(gamePoint); // Nếu ăn được banh thì không phóng to banh 
+                        else {
+                            BallEnvol();
+                            GenerateNewPieces();
+                        }
                     }              
                 }
             }
@@ -193,11 +254,7 @@ namespace Line_98
                 BoardColor[Des_x, Des_y] = color;
                 Des.ApplyColorToCell(color);
 
-                int gamePoint = CheckAndRemoveBall(Des);
-                if (gamePoint > 0) {
-                    ScoreAndDisplayUpdate(gamePoint);
-                } else
-                    Des.BallToEnlarged();
+                Des.BallToEnlarged();
             }
             else
             {
@@ -211,7 +268,12 @@ namespace Line_98
             return CanMoveToDes;
         }
 
-        //Kiểm tra xem có di chuyển được đến ô đã chọn
+        /// <summary>
+        /// Kiểm tra xem có di chuyển được đến ô đã chọn
+        /// </summary>
+        /// <param name="StartPoint"></param>
+        /// <param name="EndPoint"></param>
+        /// <returns></returns>
         private bool CanMoveBall(Point StartPoint, Point EndPoint)
         {
             int[] dx = { 1, -1, 0, 0 };
@@ -226,15 +288,13 @@ namespace Line_98
                 Point point = CheckQueue.First();
                 CheckQueue.Dequeue();
 
-                //Console.WriteLine("x = " + point.X + ", y = " + point.Y);
-
                 //Nếu đã đến được đích thì kết luận có thể đến
                 if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
                 for (int k = 0; k < 4; k++)
                 {
                     int New_X = point.X + dx[k];
                     int New_Y = point.Y + dy[k];
-                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] <= 0)
+                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] <= 0) 
                     {
                         visited[New_X, New_Y] = true;
                         Point NextPoint = new Point(New_X, New_Y);
@@ -245,7 +305,9 @@ namespace Line_98
             //Không đến được đích
             return false;
         }
-
+        /// <summary>
+        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu
+        /// </summary>
         private void GenerateFirstPieces()
         {
             Random random = new Random();
@@ -267,6 +329,9 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// Tạo banh nhỏ
+        /// </summary>
         private void GenerateNewPieces()
         {
             Random random = new Random();
@@ -310,21 +375,25 @@ namespace Line_98
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] < 0)
                 {
                     cell.BallToEnlarged();
+                    //Đổi giá trị màu tại ô đang xét thành giá trị màu dương
                     BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos]; 
 
                     // Hiển thị điểm lên Main_Form
-                    int gamePoint = CheckAndRemoveBall(cell);
+                    int gamePoint = CheckAndRemoveBall(cell); // Phóng to banh rồi xét xem có banh nào ăn được không 
+                    
                     if (gamePoint > 0) {
                         // Hiển thị điểm lên Main_Form
                         ScoreAndDisplayUpdate(gamePoint);
                     }
                 }
             }
-        }      
+        }
 
+        /// <summary>
+        /// Bỏ đánh dấu ô cũ
+        /// </summary>
         private void ResetSelection()
         {
-            // Bỏ đánh dấu ô cũ
             if (FirstSelectedCell != null)
             {
                 FirstSelectedCell.GetUnselected();
@@ -345,7 +414,7 @@ namespace Line_98
             {
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] == 0)
                 {
-                    return false;
+                    return false; 
                 }
             }
 
@@ -379,7 +448,7 @@ namespace Line_98
                 // đi xuôi hướng
                 int x = r + dx[dir];
                 int y = c + dy[dir];
-                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x,y] > 0) { 
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x, y] > 0) { 
                     line.Add(BoardCells[x, y]);
                     x += dx[dir];
                     y += dy[dir];
@@ -388,7 +457,7 @@ namespace Line_98
                 // đi ngược hướng
                 x = r - dx[dir];
                 y = c - dy[dir];
-                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x,y] > 0) {
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x, y] > 0) {
                     line.Add(BoardCells[x, y]);
                     x -= dx[dir];
                     y -= dy[dir];
@@ -425,7 +494,9 @@ namespace Line_98
             if (numBall < 5)
                 return;
 
-            gameScore += (numBall - 4) * (numBall + 5) / 2;
+            gameScore += ScoreMap[numBall]; 
+            // gameScore += (numBall - 4) * (numball + 5) / 2;
+            
             RepaintCurrentScore();
 
         }
@@ -436,24 +507,54 @@ namespace Line_98
         /// <summary>
         /// Thêm PictureBox hiển thị điểm số hiện tại
         /// </summary>
-        public void BuildCurrentScore() {
+        private void BuildCurrentScore() {
             int currentScore_PosX = this.Width - 180;
 
             for (int i = 0; i < 5; ++i) {
                 currentScore[i] = new PictureBox();
+                currentScore[i].BackColor = this.BackColor;
                 currentScore[i].Location = new Point(currentScore_PosX + 22 * i, 25);
                 currentScore[i].Size = Number.SCORE_SIZE;
+                currentScore[i].SizeMode = PictureBoxSizeMode.StretchImage;
                 this.Controls.Add(currentScore[i]);
             }
         }
 
         /// <summary>
-        /// Cập nhật điểm số 
+        /// Cập nhật điểm số hiện tại 
         /// </summary>
-        public void RepaintCurrentScore() {
-            int[] digits = Number.Slipt(gameScore);
+        private void RepaintCurrentScore() {
+            int[] digits = Number.Split(gameScore);
+
             for(int i = 0; i < 5; ++i) {
-                currentScore[i].Image = Number.bmpCurrentScoreDigits[digits[i]];
+                currentScore[i].Image = Number.bmpSCORE_Digits[digits[i]];
+            }
+        }
+
+        /// <summary>
+        /// Thêm PictureBox hiển thị điểm số cao nhất (Cập nhật lại sau khi thêm Database)
+        /// </summary>
+        private void BuildHighestScore() {
+            int highestScore_PosX = 45;
+
+            for(int i = 0; i < 5; ++i) {
+                highestScore[i] = new PictureBox();
+                highestScore[i].BackColor = this.BackColor;
+                highestScore[i].Location = new Point(highestScore_PosX + 22 * i, 25);
+                highestScore[i].Size = Number.SCORE_SIZE;
+                highestScore[i].SizeMode = PictureBoxSizeMode.StretchImage;
+                this.Controls.Add(highestScore[i]);
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật điểm số cao nhất (Cập nhật lại sau khi thêm Database)
+        /// </summary>
+        private void RepaintHighestScore() {
+            int[] digits = Number.Split(); //!!!!!!
+
+            for(int i = 0; i < 5; ++i) {
+                highestScore[i].Image = Number.bmpSCORE_Digits[digits[i]];
             }
         }
     }

@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 
 namespace Line_98
 {
+    /// <summary>
+    /// Các phương thức làm sáng và làm tối, bổ trợ tạo banh 3D
+    /// </summary>
     public static class ColorExtensions
     {
+        //Phương thức tạo vùng sáng
         public static Color Lighten(this Color color, float factor)
         {
             return Color.FromArgb(
@@ -18,7 +22,7 @@ namespace Line_98
                 Math.Min(255, (int)(color.B + (255 - color.B) * factor))
             );
         }
-
+        //Phương thức tạo vùng tối
         public static Color Darken(this Color color, float factor)
         {
             return Color.FromArgb(

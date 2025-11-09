@@ -11,8 +11,8 @@ namespace Utilities {
         private static Bitmap TIME = new Bitmap(Properties.Resources.time);
         //private static 
 
-        public static Bitmap[] bmpCurrentScoreDigits = SubImageNumber(SCORE);
-        public static Bitmap[] bmpHighestScoreDigits = SubImageNumber(TIME);
+        public static Bitmap[] bmpSCORE_Digits = SubImageNumber(SCORE);
+        public static Bitmap[] bmpTIME_Digits = SubImageNumber(TIME);
 
         public static int PosY_SCORE = 20;
         public static int PosX_currentSCORE = 350;
@@ -41,14 +41,12 @@ namespace Utilities {
             return images;
         }
 
-
-
         /// <summary>
         /// Cắt điểm thành các số để in ra 
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public static int[] Slipt(int num) {
+        public static int[] Split(int num = 0) {
             int[] result = new int[5];
 
             int i = 4;
