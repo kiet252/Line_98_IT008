@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Drawing;
 using System.Linq;
+using System.Media;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Media;
+using Utilities;
+
 
 namespace Line_98
 {
@@ -54,6 +57,7 @@ namespace Line_98
 
             this.Location = new Point(10, 20);
             this.Size = new Size(700, 800);
+            //this.BackColor = Color.Black;
 
             InitializePanel();
 
@@ -62,6 +66,13 @@ namespace Line_98
 
             //Tạo các banh chuẩn bị biến thành banh to
             GenerateNewPieces();
+
+            //Tạo PictureBox cho điểm hiện tại 
+            BuildCurrentScore();
+
+            //Hiển thị điểm lên Panel 
+            RepaintCurrentScore();
+
         }
 
         //Khởi tạo bảng CellBoard
@@ -80,6 +91,7 @@ namespace Line_98
 
             //Khởi tạo từng Cell trong CellBoard
             InitializeBoard();
+
         }
 
         void InitializeBoard()
@@ -183,9 +195,7 @@ namespace Line_98
 
                 int gamePoint = CheckAndRemoveBall(Des);
                 if (gamePoint > 0) {
-                    // Hiển thị điểm lên Main_Form
-                    gameScore += ((gamePoint - 4) * (gamePoint - 4));
-                    Main_Form.UpdateScore(gameScore);
+                    ScoreAndDisplayUpdate(gamePoint);
                 } else
                     Des.BallToEnlarged();
             }
@@ -300,14 +310,13 @@ namespace Line_98
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] < 0)
                 {
                     cell.BallToEnlarged();
-                    BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos]; // ? tại sao âm vậy ?
+                    BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos]; 
 
                     // Hiển thị điểm lên Main_Form
                     int gamePoint = CheckAndRemoveBall(cell);
                     if (gamePoint > 0) {
                         // Hiển thị điểm lên Main_Form
-                        gameScore += ((gamePoint - 4) * (gamePoint - 4));
-                        Main_Form.UpdateScore(gameScore);
+                        ScoreAndDisplayUpdate(gamePoint);
                     }
                 }
             }
@@ -350,7 +359,7 @@ namespace Line_98
         /// <returns>
         /// Trả về số banh ăn được
         /// </returns>
-        int CheckAndRemoveBall(GameCell Src) {
+        private int CheckAndRemoveBall(GameCell Src) {
             int r = Src.X_Pos;
             int c = Src.Y_Pos;
             int color = BoardColor[r, c];
@@ -370,7 +379,7 @@ namespace Line_98
                 // đi xuôi hướng
                 int x = r + dx[dir];
                 int y = c + dy[dir];
-                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardCells[x, y].isLargedBall()) { 
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x,y] > 0) { 
                     line.Add(BoardCells[x, y]);
                     x += dx[dir];
                     y += dy[dir];
@@ -379,7 +388,7 @@ namespace Line_98
                 // đi ngược hướng
                 x = r - dx[dir];
                 y = c - dy[dir];
-                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardCells[x, y].isLargedBall()) {
+                while(x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x,y] > 0) {
                     line.Add(BoardCells[x, y]);
                     x -= dx[dir];
                     y -= dy[dir];
@@ -406,6 +415,46 @@ namespace Line_98
             }
 
             return g_Point;
+        }
+
+        /// <summary>
+        /// Tính điểm hiện tại và cập nhật điểm lên Panel 
+        /// </summary>
+        /// <param name="numBall"></param>
+        private void ScoreAndDisplayUpdate(int numBall) {
+            if (numBall < 5)
+                return;
+
+            gameScore += (numBall - 4) * (numBall + 5) / 2;
+            RepaintCurrentScore();
+
+        }
+
+        private PictureBox[] currentScore = new PictureBox[5]; // Điểm số hiện tại 
+        private PictureBox[] highestScore = new PictureBox[5]; // Điểm số cao nhất 
+
+        /// <summary>
+        /// Thêm PictureBox hiển thị điểm số hiện tại
+        /// </summary>
+        public void BuildCurrentScore() {
+            int currentScore_PosX = this.Width - 180;
+
+            for (int i = 0; i < 5; ++i) {
+                currentScore[i] = new PictureBox();
+                currentScore[i].Location = new Point(currentScore_PosX + 22 * i, 25);
+                currentScore[i].Size = Number.SCORE_SIZE;
+                this.Controls.Add(currentScore[i]);
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật điểm số 
+        /// </summary>
+        public void RepaintCurrentScore() {
+            int[] digits = Number.Slipt(gameScore);
+            for(int i = 0; i < 5; ++i) {
+                currentScore[i].Image = Number.bmpCurrentScoreDigits[digits[i]];
+            }
         }
     }
 }
