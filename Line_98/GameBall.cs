@@ -11,11 +11,26 @@ namespace Line_98
 {
     internal class GameBall : PictureBox
     {
+        //Màu của banh
         private Color MyColor;
+
+        //Chỉ số phóng lớn banh
         private const double BallScale = 2.5;
 
         //Hằng quyết định kích cỡ các quả banh
         private const int BallRadius = 8;
+
+        /// <summary>
+        /// Setter đổi màu banh
+        /// </summary>
+        public Color myColor
+        {
+            set
+            {
+                MyColor = value;
+                this.Invalidate();
+            }
+        }
 
         public GameBall(Color NewColor)
         {
@@ -33,6 +48,7 @@ namespace Line_98
             base.OnPaint(e);
 
             var rect = new Rectangle(0, 0, Width, Height);
+            //Tạo hiệu ứng 3D cho banh (Hiệu ứng sáng tối)
             using (var brush = new LinearGradientBrush(
                 rect,
                 ColorExtensions.Lighten(MyColor, 0.3f),
@@ -44,11 +60,24 @@ namespace Line_98
                 e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
             }
         }
-
+        /// <summary>
+        /// Phóng lớn banh
+        /// </summary>
         public void Enlarge()
         {
             this.Width = (int)(BallRadius * 2 * BallScale);
             this.Height = (int)(BallRadius * 2 * BallScale);
+
+            this.Invalidate();
+        }
+
+        /// <summary>
+        /// Thu nhỏ banh
+        /// </summary>
+        public void ToDefault()
+        {
+            this.Width = BallRadius * 2;
+            this.Height = BallRadius * 2;
 
             this.Invalidate();
         }
@@ -62,22 +91,6 @@ namespace Line_98
             if(Width == BallRadius * 2 * BallScale)
                 return true;
             return false;
-        }
-
-        public void ToDefault()
-        {
-            this.Width = BallRadius * 2;
-            this.Height = BallRadius * 2;
-
-            this.Invalidate();
-        }
-
-        public Color myColor{
-            set
-            {
-                MyColor = value;
-                this.Invalidate();
-            }
         }
     }
 }

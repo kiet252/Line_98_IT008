@@ -23,19 +23,35 @@ namespace Line_98
         private Panel CellBoard;
         private int CellSize = 0;
 
-        //Lưu màu quân cờ
+        /// <summary>
+        /// Lưu màu quân cờ. 
+        /// </summary>
+        /// <remarks>
+        /// Mỗi ô có các trạng thái:
+        /// <list type="bullet">
+        /// <item><description>0: Ô trống, không có banh</description></item>
+        /// <item><description>Giá trị âm: Ô chứa banh nhỏ</description></item>
+        /// <item><description>Giá trị dương: Ô chứa banh lớn</description></item>
+        /// </list>
+        /// </remarks>
         private int[,] BoardColor = new int[9, 9];
 
-        //Màu các quả banh
+        /// <summary>
+        /// Mảng màu sắc cho các quả banh trong game
+        /// </summary>
+        /// <remarks>
+        /// Hệ thống tự động nhận biết khi thêm/bớt màu
+        /// Không xóa Color.LightGray (index 0, tượng trưng cho ô rỗng)
+        /// </remarks>
         static internal Color[] GameColor = {
-            Color.LightGray, //Màu ô rỗng
+            Color.LightGray, //0 - Màu ô rỗng (Không xóa!)
             Color.Red,
-            Color.Green,// 1
-            Color.Blue,// 2
-            Color.Gold, // 3
-            Color.DarkRed, // 4
-            Color.Magenta, // 5
-            Color.Cyan //6
+            Color.Green,
+            Color.Blue,
+            Color.Gold,
+            Color.DarkRed,
+            Color.Magenta,
+            Color.Cyan
         };
 
         // Điểm số
@@ -98,8 +114,7 @@ namespace Line_98
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
-                    /*Khi Cell được nhấp vào, Cell sẽ thực hiện hàm CellClick 
-                    -> hàm CellClick là thao tác mà Cell đó thực hiện khi được nhấp vào */
+                    //Khi Cell được nhấp vào, Cell sẽ thực hiện hàm CellClick 
                     Cell.Click += CellClick;
 
                     //Thêm Cell vừa tạo vào CellBoard
@@ -111,6 +126,11 @@ namespace Line_98
             }
         }
 
+        /// <summary>
+        /// thao tác mà Cell đó thực hiện khi được nhấp vào
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CellClick(object sender, EventArgs e)
         {
             //Check xem cell vừa ấn vào có vị trí ở đâu thông qua Cell.Tag
@@ -202,7 +222,12 @@ namespace Line_98
             return CanMoveToDes;
         }
 
-        //Kiểm tra xem có di chuyển được đến ô đã chọn
+        /// <summary>
+        /// Kiểm tra xem có di chuyển được đến ô đã chọn
+        /// </summary>
+        /// <param name="StartPoint"></param>
+        /// <param name="EndPoint"></param>
+        /// <returns></returns>
         private bool CanMoveBall(Point StartPoint, Point EndPoint)
         {
             int[] dx = { 1, -1, 0, 0 };
@@ -236,7 +261,9 @@ namespace Line_98
             //Không đến được đích
             return false;
         }
-
+        /// <summary>
+        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu
+        /// </summary>
         private void GenerateFirstPieces()
         {
             Random random = new Random();
@@ -257,7 +284,9 @@ namespace Line_98
                 }
             }
         }
-
+        /// <summary>
+        /// Tạo banh nhỏ
+        /// </summary>
         private void GenerateNewPieces()
         {
             Random random = new Random();
@@ -301,6 +330,7 @@ namespace Line_98
                 if (BoardColor[cell.X_Pos, cell.Y_Pos] < 0)
                 {
                     cell.BallToEnlarged();
+                    //Đổi giá trị màu tại ô đang xét thành giá trị màu dương
                     BoardColor[cell.X_Pos, cell.Y_Pos] = -BoardColor[cell.X_Pos, cell.Y_Pos]; // ? tại sao âm vậy ?
 
                     // Hiển thị điểm lên Main_Form
@@ -312,11 +342,13 @@ namespace Line_98
                     }
                 }
             }
-        }      
+        }
 
+        /// <summary>
+        /// Bỏ đánh dấu ô cũ
+        /// </summary>
         private void ResetSelection()
         {
-            // Bỏ đánh dấu ô cũ
             if (FirstSelectedCell != null)
             {
                 FirstSelectedCell.GetUnselected();
