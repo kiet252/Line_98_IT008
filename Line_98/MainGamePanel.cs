@@ -90,6 +90,10 @@ namespace Line_98
 
             InitializePanel();
 
+            //
+            DoubleBuffered = true;
+            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+
             //Tạo các banh khi mới vào game
             GenerateFirstPieces();
 

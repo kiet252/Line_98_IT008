@@ -123,8 +123,7 @@ namespace Line_98
         /// </summary>
         public void GetSelected()
         {
-            this.FlatAppearance.BorderSize = 3;
-            this.FlatAppearance.BorderColor = Color.Red;
+            Ball.StartBouncing();
         }
 
         /// <summary>
@@ -132,8 +131,8 @@ namespace Line_98
         /// </summary>
         public void GetUnselected()
         {
-            this.FlatAppearance.BorderSize = 1;
-            this.FlatAppearance.BorderColor = Color.Black;
+            Ball.StopBouncing();
+            CenterBall();
         }
 
         
