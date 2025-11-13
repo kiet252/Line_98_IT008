@@ -84,6 +84,19 @@ namespace Line_98
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private GameCell FirstSelectedCell = null;
 
+        //Các biến bổ trợ cho animation di chuyển banh
+        private List<Point> pathPoints = new List<Point>();
+        private int currentPathIndex = 0;
+        private float animationProgress = 0f;
+        private Timer pathTimer;
+        private bool isMoving = false;
+        private float moveSpeed = 0.8f;
+        private GameBall animationBall; // Banh tạm thời cho animation
+        private GameCell sourceCell; // Ô nguồn
+        private GameCell destinationCell; // Ô đích
+        private int movingBallColor; // Màu của banh đang di chuyển
+        private bool isAnimating = false;
+
         //Constructor
         public MainGamePanel(Main_Form mainForm)
         {
@@ -184,6 +197,8 @@ namespace Line_98
         /// <param name="e"></param>
         private void CellClick(object sender, EventArgs e)
         {
+            if (isAnimating) return;
+
             //Check xem cell vừa ấn vào có vị trí ở đâu thông qua Cell.Tag
             GameCell Clicked_Cell = (GameCell)sender;
 
@@ -212,17 +227,8 @@ namespace Line_98
                 //Không phải thì tiến hành di chuyển 
                 else if (BoardColor[Clicked_Cell.X_Pos, Clicked_Cell.Y_Pos] <= 0)
                 {
-                    //Di chuyển thành công thì mới tạo banh mới
-                    if (MoveBall(FirstSelectedCell, Clicked_Cell))
-                    {
-                        int gamePoint = CheckAndRemoveBall(Clicked_Cell);
-                        if (gamePoint > 0)
-                            ScoreAndDisplayUpdate(gamePoint); // Nếu ăn được banh thì không phóng to banh 
-                        else {
-                            BallEnvol();
-                            GenerateNewPieces();
-                        }
-                    }              
+                    //Di chuyển banh
+                    MoveBall(FirstSelectedCell, Clicked_Cell);          
                 }
             }
 
@@ -251,14 +257,12 @@ namespace Line_98
                 // Lấy màu của ball từ ô nguồn
                 int color = BoardColor[Src_x, Src_y];
 
+                //Animation chạy banh
+                CreateMoveAnimation(Src, Des);
+
                 //Xóa ball ở ô nguồn
                 BoardColor[Src_x, Src_y] = 0;
                 Src.RemoveBall();
-
-                BoardColor[Des_x, Des_y] = color;
-                Des.ApplyColorToCell(color);
-
-                Des.BallToEnlarged();
             }
             else
             {
@@ -270,6 +274,218 @@ namespace Line_98
             // Reset chọn sau khi di chuyển
             ResetSelection();
             return CanMoveToDes;
+        }
+
+        /// <summary>
+        /// Tạo animation di chuyển banh từ ô nguồn đến ô đích
+        /// </summary>
+        private void CreateMoveAnimation(GameCell src, GameCell dest)
+        {
+            // Tìm đường đi
+            List<Point> path = FindPath(new Point(src.X_Pos, src.Y_Pos), new Point(dest.X_Pos, dest.Y_Pos));
+
+            if (path == null || path.Count < 2)
+            {
+                path = new List<Point> {
+                    new Point(src.X_Pos, src.Y_Pos),
+                    new Point(dest.X_Pos, dest.Y_Pos)
+                };
+            }
+
+            sourceCell = src;
+            destinationCell = dest;
+            movingBallColor = BoardColor[src.X_Pos, src.Y_Pos];
+
+            // Tạo banh tạm thời cho animation
+            animationBall = new GameBall(GameColor[Math.Abs(movingBallColor)]);
+            animationBall.Size = new Size(CellSize, CellSize);
+            animationBall.BackColor = Color.Transparent;
+            animationBall.Enlarge();
+
+            // Đặt vị trí ban đầu
+            Point startPos = GetBallCenterPosition(new Point(src.X_Pos, src.Y_Pos));
+            animationBall.Location = new Point(startPos.X - animationBall.Width / 2, startPos.Y - animationBall.Height / 2);
+
+            CellBoard.Controls.Add(animationBall);
+            animationBall.BringToFront();
+
+            // Bắt đầu animation
+            StartPathAnimation(path);
+        }
+
+        /// <summary>
+        /// Tìm đường đi từ start đến end cho animation
+        /// </summary>
+        private List<Point> FindPath(Point start, Point end)
+        {
+            int[] dx = { 1, -1, 0, 0 };
+            int[] dy = { 0, 0, 1, -1 };
+
+            bool[,] visited = new bool[9, 9];
+            Point[,] parent = new Point[9, 9];
+            Queue<Point> queue = new Queue<Point>();
+
+            queue.Enqueue(start);
+            visited[start.X, start.Y] = true;
+            parent[start.X, start.Y] = new Point(-1, -1);
+
+            while (queue.Count > 0)
+            {
+                Point current = queue.Dequeue();
+
+                if (current.X == end.X && current.Y == end.Y)
+                {
+                    return ReconstructPath(parent, start, end);
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
+                    int newX = current.X + dx[k];
+                    int newY = current.Y + dy[k];
+
+                    if (newX >= 0 && newY >= 0 && newX < 9 && newY < 9 &&
+                        !visited[newX, newY] && BoardColor[newX, newY] <= 0)
+                    {
+                        visited[newX, newY] = true;
+                        parent[newX, newY] = current;
+                        queue.Enqueue(new Point(newX, newY));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Xây dựng đường đi cho animation
+        /// </summary>
+        private List<Point> ReconstructPath(Point[,] parent, Point start, Point end)
+        {
+            List<Point> path = new List<Point>();
+            Point current = end;
+
+            while (current.X != -1 && current.Y != -1)
+            {
+                path.Add(current);
+                current = parent[current.X, current.Y];
+            }
+
+            path.Reverse();
+            return path;
+        }
+
+        /// <summary>
+        /// Bắt đầu animation
+        /// </summary>
+        private void StartPathAnimation(List<Point> path)
+        {
+            pathPoints = path;
+            currentPathIndex = 0;
+            animationProgress = 0f;
+            isMoving = true;
+            isAnimating = true;
+
+            //Vô hiệu hóa board khi đang thực hiện di chuyển
+            CellBoard.Enabled = false;
+
+            if (pathTimer == null)
+            {
+                pathTimer = new Timer();
+                pathTimer.Interval = 16; // ~60 FPS
+                pathTimer.Tick += PathTimer_Tick;
+            }
+
+            pathTimer.Start();
+        }
+
+        private void PathTimer_Tick(object sender, EventArgs e)
+        {
+            if (!isMoving || animationBall == null || pathPoints.Count < 2 || currentPathIndex >= pathPoints.Count - 1)
+            {
+                FinishAnimation();
+                return;
+            }
+
+            // Tăng tiến trình animation
+            animationProgress += moveSpeed;
+
+            // Chuyển sang đoạn đường tiếp theo nếu cần
+            if (animationProgress >= 1.0f)
+            {
+                animationProgress = 0f;
+                currentPathIndex++;
+
+                if (currentPathIndex >= pathPoints.Count - 1)
+                {
+                    FinishAnimation();
+                    return;
+                }
+            }
+
+            // Tính toán vị trí hiện tại
+            Point startCell = pathPoints[currentPathIndex];
+            Point endCell = pathPoints[currentPathIndex + 1];
+
+            // Chuyển từ tọa độ ô sang tọa độ pixel cho trung tâm banh
+            Point startPixel = GetBallCenterPosition(startCell);
+            Point endPixel = GetBallCenterPosition(endCell);
+
+            // Di chuyển banh
+            int currentX = (int)(startPixel.X + (endPixel.X - startPixel.X) * animationProgress);
+            int currentY = (int)(startPixel.Y + (endPixel.Y - startPixel.Y) * animationProgress);
+
+            animationBall.Location = new Point(currentX - animationBall.Width / 2, currentY - animationBall.Height / 2);
+        }
+
+        /// <summary>
+        /// Lấy vị trí trung tâm của banh trong ô
+        /// </summary>
+        private Point GetBallCenterPosition(Point cell)
+        {
+            int cellX = cell.Y * CellSize; // Chuyển từ (row,col) sang (x,y)
+            int cellY = cell.X * CellSize;
+            int centerX = cellX + CellSize / 2;
+            int centerY = cellY + CellSize / 2;
+            return new Point(centerX, centerY);
+        }
+
+        private void FinishAnimation()
+        {
+            isMoving = false;
+            isAnimating = false;
+            //Kích hoạt lại board
+            CellBoard.Enabled = true;
+
+            pathTimer?.Stop();
+
+            // Cập nhật board state sau khi animation hoàn thành
+            if (sourceCell != null && destinationCell != null && animationBall != null)
+            {
+                // Xóa banh tạm
+                CellBoard.Controls.Remove(animationBall);
+                animationBall.Dispose();
+                animationBall = null;
+
+                // Cập nhật ô đích với banh thật
+                BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos] = movingBallColor;
+                destinationCell.ApplyColorToCell(movingBallColor);
+                destinationCell.BallToEnlarged();
+
+                // Kiểm tra và xử lý điểm số
+                int gamePoint = CheckAndRemoveBall(destinationCell);
+                if (gamePoint > 0)
+                {
+                    ScoreAndDisplayUpdate(gamePoint);
+                }
+                else
+                {
+                    BallEnvol();
+                    GenerateNewPieces();
+                }
+            }
+
+            sourceCell = null;
+            destinationCell = null;
         }
 
         /// <summary>

@@ -115,6 +115,7 @@ namespace Line_98
                 e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
             }
         }
+
         /// <summary>
         /// Phóng lớn banh
         /// </summary>
@@ -135,11 +136,6 @@ namespace Line_98
             this.Height = BallRadius * 2;
 
             this.Invalidate();
-        }
-
-        public void Bouncing()
-        {
-
         }
 
         /// <summary>
