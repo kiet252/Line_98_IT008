@@ -25,5 +25,70 @@ namespace Line_98
             mainGamePanel = new MainGamePanel(this);
             this.Controls.Add(mainGamePanel);
         }
+
+        /// <summary>
+        /// MenuStrip để save game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
+            saveGame.Filter = "Line98 file (*.ln98)|*.ln98";
+            saveGame.FileName = "Game_Line98";
+
+            DialogResult r = this.saveGame.ShowDialog();
+
+            if(r == DialogResult.OK) {
+
+                SaveAndLoad.save(saveGame.FileName, mainGamePanel);
+            }
+
+            this.Close();
+        }
+
+        /// <summary>
+        /// MenuStrip để load game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e) {
+            loadGame.Filter = "Line98 file (*.ln98)|*.ln98";
+
+            DialogResult r = this.loadGame.ShowDialog();
+
+            if (r == DialogResult.OK) { 
+                SaveAndLoad.load(loadGame.FileName, mainGamePanel);
+            }
+        }
+
+        /// <summary>
+        /// MenuStrip để hoàn lại bước đi trước đó
+        /// Chỉ hoàn lại được 1 lần 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
+            throw new NotImplementedException(); //Nào rảnh làm 
+        }
+
+        /// <summary>
+        /// MenuStrip hiển thị Form về Hướng dẫn chơi game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void howToPlayToolStripMenuItem_Click(object sender, EventArgs e) {
+            fHowToPlay help = new fHowToPlay();
+            help.Show();
+        }
+
+        /// <summary>
+        /// MenuStrip về Thông tin đồ án
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            fAbout about = new fAbout();
+            about.Show();
+        }
     }
 }

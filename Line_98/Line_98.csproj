@@ -47,6 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorExtensions.cs" />
+    <Compile Include="fAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fAbout.Designer.cs">
+      <DependentUpon>fAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="fHowToPlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="fHowToPlay.Designer.cs">
+      <DependentUpon>fHowToPlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="GameBall.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -64,6 +76,13 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaveAndLoad.cs" />
+    <EmbeddedResource Include="fAbout.resx">
+      <DependentUpon>fAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="fHowToPlay.resx">
+      <DependentUpon>fHowToPlay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main_Form.resx">
       <DependentUpon>Main_Form.cs</DependentUpon>
     </EmbeddedResource>
@@ -92,6 +111,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\ding.wav" />
+    <None Include="Resources\VNU_HCM.png" />
+    <None Include="Resources\Logo_UIT1.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GiaoDien\Utilities.csproj">
