@@ -68,5 +68,25 @@ namespace Line_98.Properties {
                 return ResourceManager.GetStream("ding", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Logo_UIT {
+            get {
+                object obj = ResourceManager.GetObject("Logo_UIT", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap VNU_HCM {
+            get {
+                object obj = ResourceManager.GetObject("VNU_HCM", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

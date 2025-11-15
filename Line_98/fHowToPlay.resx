@@ -117,14 +117,52 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Logo_UIT" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Logo_UIT1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <metadata name="rtbHowToPlay.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="rtbHowToPlay.Text" xml:space="preserve">
+    <value>🟢 MÔ TẢ CÁCH CHƠI GAME LINE 98
+
+Line 98 là một trò chơi xếp bóng kinh điển. Mục tiêu của người chơi là di chuyển các quả bóng sao cho tạo thành đường thẳng từ 5 bóng cùng màu trở lên để ghi điểm.
+
+🎮 Luật chơi
+
+Bàn chơi gồm một lưới ô vuông (9×9).
+
+Mỗi lượt, người chơi chọn một quả bóng, rồi chọn ô trống để di chuyển bóng tới đó.
+
+Bóng chỉ có thể di chuyển được nếu tồn tại đường đi thông (không bị chặn).
+
+Sau mỗi lần di chuyển không tạo được dòng 5 bóng, sẽ có 5 bóng mới xuất hiện ngẫu nhiên.
+
+Khi người chơi xếp được 5 bóng trở lên cùng màu theo:
+
+- hàng ngang
+
+- hàng dọc
+
+- đường chéo
+thì các bóng đó sẽ biến mất và người chơi được cộng điểm.
+
+Trò chơi kết thúc khi không còn ô trống để sinh bóng mới.
+
+⭐ Mục tiêu
+
+- Giữ cho bàn chơi luôn còn không gian.
+
+- Tạo các chuỗi bóng dài để ghi nhiều điểm nhất.
+
+- Kéo dài thời gian sống sót bằng chiến lược sắp xếp khôn ngoan.
+
+💡 Mẹo chơi
+
+- Luôn ưu tiên tạo đường 5 bóng ngay thay vì di chuyển linh tinh.
+
+- Tránh để các bóng mới xuất hiện chặn đường đi.
+
+- Tập trung gom bóng theo khu vực thay vì rải rác.</value>
   </data>
-  <data name="ding" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>ding.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="VNU_HCM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\VNU_HCM.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
+  <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
 </root>

@@ -58,9 +58,6 @@ namespace Line_98
             Color.Cyan
         };
 
-        // Điểm số
-        private int gameScore;
-
         //Hằng quyết định số lượng banh mới mỗi lần tạo
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
@@ -97,6 +94,32 @@ namespace Line_98
         private int movingBallColor; // Màu của banh đang di chuyển
         private bool isAnimating = false;
 
+        //Display
+        // Điểm số
+        private int gameScore;
+        private PictureBox[] currentScore = new PictureBox[5];          // Điểm số hiện tại 
+        private PictureBox[] highestScore = new PictureBox[5];          // Điểm số cao nhất
+        private PictureBox[] gameTime = new PictureBox[4];              // Thời gian
+        private Timer gameTimer = new Timer();
+        private int gameTimeSec = 0;                                    // Thời gian ván game (đơn vị: giây)
+        public int GameTime { get { return gameTimeSec; } set { gameTimeSec = value; } }// Lấy thông tin thời gian 
+        public int GameScore { get { return gameScore; } set { gameScore = value; } }   // Lấy thông tin điểm hiện tại
+        public int[,] GameBoardColor { get { return BoardColor; } }     // Lấy thông tin BoardColor để lưu game 
+
+        public void setGameBoardColor(int row, int col, int color) {    // Thiết lập lại BoardCell khi load game
+            BoardColor[row, col] = color;
+
+            if(color > 0) {
+                BoardCells[row, col].BallToEnlarged();
+                BoardCells[row, col].ApplyColorToCell(color);
+            }else if(color < 0) {
+                BoardCells[row, col].BallToDefault();
+                BoardCells[row, col].ApplyColorToCell(color);
+            } else {
+                BoardCells[row, col].RemoveBall();
+            }
+        }
+
         //Constructor
         public MainGamePanel(Main_Form mainForm)
         {
@@ -122,11 +145,15 @@ namespace Line_98
             BuildCurrentScore();
             //Tạo PictureBox cho điểm cao nhất 
             BuildHighestScore();
+            //Tạo PictureBox cho thời gian
+            BuildGameTime();
 
             //Hiển thị điểm hiện tại lên Panel 
             RepaintCurrentScore();
             //Hiển thị điểm cao nhất lên Panel 
             RepaintHighestScore();
+            //Hiển thị thời gian lên Panel
+            RepaintGameTime();
 
             this.Invalidate();
         }
@@ -158,6 +185,13 @@ namespace Line_98
             //Vì ô CellBoard luôn có 9 x 9 ô, độ lớn mỗi phần tử cell là CellBoard.Width / 9
             CellSize = (CellBoard.Width / 9);
 
+            // Bắt đầu tính điểm
+            gameScore = 0;
+            // Bắt đầu tính giờ
+            gameTimeSec = 0;
+            gameTimer.Tick += GameTimer_Tick;
+            gameTimer.Start();
+
             //Khởi tạo từng Cell trong CellBoard
             InitializeBoard();
 
@@ -165,9 +199,6 @@ namespace Line_98
 
         void InitializeBoard()
         {
-
-            // Bắt đầu tính điểm
-            gameScore = 0;
 
             for (int Row = 0; Row < 9; Row++)
             {
@@ -719,10 +750,7 @@ namespace Line_98
             
             RepaintCurrentScore();
 
-        }
-
-        private PictureBox[] currentScore = new PictureBox[5]; // Điểm số hiện tại 
-        private PictureBox[] highestScore = new PictureBox[5]; // Điểm số cao nhất 
+        } 
 
         /// <summary>
         /// Thêm PictureBox hiển thị điểm số hiện tại
@@ -743,7 +771,7 @@ namespace Line_98
         /// <summary>
         /// Cập nhật điểm số hiện tại 
         /// </summary>
-        private void RepaintCurrentScore() {
+        public void RepaintCurrentScore() {
             int[] digits = Number.Split(gameScore);
 
             for(int i = 0; i < 5; ++i) {
@@ -776,6 +804,43 @@ namespace Line_98
             for(int i = 0; i < 5; ++i) {
                 highestScore[i].Image = Number.bmpSCORE_Digits[digits[i]];
             }
+        }
+
+        /// <summary>
+        /// Thêm PictureBox thể hiện thời gian
+        /// </summary>
+        private void BuildGameTime() {
+            int timePos = this.Width / 2 - 30;
+
+            for (int i = 0; i < 4; ++i) {
+                gameTime[i] = new PictureBox();
+                gameTime[i].BackColor = this.BackColor;
+                gameTime[i].Location = new Point(timePos + 10 * i, 40);
+                gameTime[i].Size = Number.TIME_SIZE;
+                gameTime[i].SizeMode = PictureBoxSizeMode.StretchImage;
+                this.Controls.Add(gameTime[i]);
+            }
+        }
+
+        /// <summary>
+        /// Cập nhật thời gian
+        /// </summary>
+        private void RepaintGameTime() {
+            int[] digit = Number.Split(gameTimeSec);
+
+            for(int i = 0; i < 4; ++i) {
+                gameTime[i].Image = Number.bmpTIME_Digits[digit[i]];
+            }
+        }
+
+        /// <summary>
+        /// Tăng thời gian ván game lên 1 (đơn vị: giây)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GameTimer_Tick(object sender, EventArgs e) {
+            gameTimeSec++;
+            RepaintGameTime();
         }
     }
 }
