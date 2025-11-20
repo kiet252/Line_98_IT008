@@ -261,6 +261,13 @@ namespace Line_98
                     //Di chuyển banh
                     MoveBall(FirstSelectedCell, Clicked_Cell);
                 }
+                else
+                {
+                    //Nếu chọn một banh khác, chuyển lựa chọn sang bang được chọn tiếp theo
+                    FirstSelectedCell.GetUnselected();
+                    FirstSelectedCell = Clicked_Cell;
+                    Clicked_Cell.GetSelected();
+                }
             }
 
         }
@@ -288,22 +295,26 @@ namespace Line_98
                 // Lấy màu của ball từ ô nguồn
                 int color = BoardColor[Src_x, Src_y];
 
+                //Âm thanh banh di chuyển
+                GameSound.PlayMoveSound();
+
                 //Animation chạy banh
                 CreateMoveAnimation(Src, Des);
 
                 //Xóa ball ở ô nguồn
                 BoardColor[Src_x, Src_y] = 0;
                 Src.RemoveBall();
+
+                // Reset chọn sau khi di chuyển
+                this.Focus();
+                ResetSelection();
             }
             else
             {
-                //Không đến được đích (Về sau có thể đổi thành âm thanh)
-                MessageBox.Show("Không thể di chuyển đến ô đã chọn!");
+                //Không đến được đích
+                GameSound.PlayCantMoveSound();
             }
-
-            this.Focus();
-            // Reset chọn sau khi di chuyển
-            ResetSelection();
+            
             return CanMoveToDes;
         }
 
@@ -632,8 +643,7 @@ namespace Line_98
                     BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
                     cell.RemoveBall();
                 }
-                SoundPlayer player = new SoundPlayer(Properties.Resources.ding); // Âm thanh ding.wav
-                player.Play();
+                GameSound.PlayDestroySound();
             }
 
             return g_Point;

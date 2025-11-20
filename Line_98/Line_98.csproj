@@ -63,6 +63,7 @@
     <Compile Include="GameBall.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GameSound.cs" />
     <Compile Include="MainGamePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -111,6 +112,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\move.wav" />
+    <None Include="Properties\cantmove.wav" />
     <Content Include="Properties\ding.wav" />
     <None Include="Resources\VNU_HCM.png" />
     <None Include="Resources\Logo_UIT1.png" />
