@@ -59,6 +59,7 @@
     <Compile Include="fHowToPlay.Designer.cs">
       <DependentUpon>fHowToPlay.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameAlgorithm.cs" />
     <Compile Include="GameBall.cs">
       <SubType>Component</SubType>
     </Compile>
