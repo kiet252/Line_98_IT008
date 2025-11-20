@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorExtensions.cs" />
     <Compile Include="fAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +111,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\select.wav" />
     <None Include="Properties\move.wav" />
     <None Include="Properties\cantmove.wav" />
     <Content Include="Properties\ding.wav" />

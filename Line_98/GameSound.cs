@@ -26,5 +26,11 @@ namespace Line_98
             SoundPlayer player = new SoundPlayer(Properties.Resources.move); // Âm thanh move.wav
             player.Play();
         }
+
+        internal static void PlaySelectSound()
+        {
+            SoundPlayer player = new SoundPlayer(Properties.Resources.select); // Âm thanh select.wav
+            player.Play();
+        }
     }
 }

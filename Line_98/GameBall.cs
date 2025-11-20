@@ -15,7 +15,7 @@ namespace Line_98
         private Color MyColor;
 
         //Chỉ số phóng lớn banh
-        private const double BallScale = 2.5;
+        private const double BallScale = 3;
 
         //Hằng quyết định kích cỡ các quả banh
         private const int BallRadius = 8;
@@ -102,17 +102,108 @@ namespace Line_98
         {
             base.OnPaint(e);
 
-            var rect = new Rectangle(0, 0, Width, Height);
-            //Tạo hiệu ứng 3D cho banh (Hiệu ứng sáng tối)
-            using (var brush = new LinearGradientBrush(
-                rect,
-                ColorExtensions.Lighten(MyColor, 0.3f),
-                ColorExtensions.Darken(MyColor, 0.5f),
-                LinearGradientMode.BackwardDiagonal
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias; // Kích hoạt khử răng cưa
+
+            var ballRect = new Rectangle(0, 0, Width - 1, Height - 1);
+
+            // --- 1. Tạo bóng (shading) Hướng tâm cơ bản (Light -> Dark) ---
+            using (var path = new GraphicsPath())
+            {
+                path.AddEllipse(ballRect);
+
+                using (var baseBrush = new PathGradientBrush(path))
+                {
+                    // Màu trung tâm: Khu vực sáng nhất
+                    Color centerColor = ColorExtensions.Lighten(MyColor, 0.5f);
+
+                    // Màu xung quanh: Bóng tối sâu/cạnh tối
+                    Color darkEdgeColor = ColorExtensions.Darken(MyColor, 0.6f);
+
+                    baseBrush.CenterColor = centerColor;
+                    baseBrush.SurroundColors = new Color[] { darkEdgeColor };
+
+                    // Định vị tâm "ánh sáng" ở khu vực phía trên bên phải
+                    baseBrush.CenterPoint = new PointF(
+                        Width * 0.65f,
+                        Height * 0.35f
+                    );
+
+                    e.Graphics.FillEllipse(baseBrush, ballRect);
+                }
+            }
+
+            // --- 2. Điểm sáng phản chiếu chính (Mạnh, Trắng sáng) ---
+            int hSize = (int)(Width * 0.25);
+            int hX = (int)(Width * 0.75) - hSize; // Vị trí X 
+            int hY = (int)(Height * 0.25) - hSize; // Vị trí Y
+
+            var highlightRect = new Rectangle(hX, hY, hSize, hSize);
+
+            using (var highlightPath = new GraphicsPath())
+            {
+                highlightPath.AddEllipse(highlightRect);
+                using (var highlightBrush = new PathGradientBrush(highlightPath))
+                {
+                    highlightBrush.CenterColor = Color.FromArgb(255, Color.White); // Trắng hoàn toàn
+                    highlightBrush.SurroundColors = new Color[] { Color.FromArgb(0, Color.Transparent) }; // Chuyển dần sang trong suốt
+
+                    highlightBrush.CenterPoint = new PointF(
+                        highlightRect.X + highlightRect.Width * 0.5f,
+                        highlightRect.Y + highlightRect.Height * 0.5f
+                    );
+
+                    e.Graphics.FillEllipse(highlightBrush, highlightRect);
+                }
+            }
+
+            // --- 3. VIỀN SÁNG PHỤ (RIM LIGHT) Ở CẠNH TRÊN BÊN PHẢI ---
+            // Vẽ một hình elip nhỏ, sáng, mờ chồng lên ở rìa trên-phải.
+            int rimSize = (int)(Width * 0.8);
+            var rimRect = new Rectangle(
+                (int)(Width * 0.2),  // Bắt đầu từ phía trên-trái
+                (int)(Height * 0.1), // Rất gần cạnh trên
+                rimSize, rimSize
+            );
+
+            using (var rimBrush = new LinearGradientBrush(
+                rimRect,
+                ColorExtensions.Lighten(MyColor, 0.6f), // Màu sáng cao
+                Color.FromArgb(0, Color.Transparent),   // Chuyển dần sang trong suốt
+                LinearGradientMode.ForwardDiagonal // Hướng gradient từ sáng ra ngoài
             ))
             {
-                e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                e.Graphics.FillEllipse(brush, 0, 0, Width - 1, Height - 1);
+                // Điều chỉnh ColorBlend để làm cho phần sáng rất mỏng và ở rìa
+                ColorBlend blend = new ColorBlend();
+                blend.Colors = new Color[] {
+                Color.FromArgb(0, Color.Transparent),   // Phần lớn hình cầu
+                Color.FromArgb(50, ColorExtensions.Lighten(MyColor, 0.6f)), // Dải sáng mờ
+                Color.FromArgb(0, Color.Transparent)    // Phía bên kia
+            };
+                // Tạo dải sáng hẹp, mờ ở rìa
+                blend.Positions = new float[] { 0.0f, 0.05f, 1.0f };
+                rimBrush.InterpolationColors = blend;
+
+                // Cắt bớt phần rìa ngoài của hình elip mờ này để chỉ thấy viền sáng
+                e.Graphics.SetClip(ballRect, CombineMode.Intersect);
+                e.Graphics.FillEllipse(rimBrush, rimRect);
+                e.Graphics.ResetClip(); // Đặt lại clip
+            }
+
+            // --- 4. Điểm sáng phản chiếu phụ mờ (Cạnh phía dưới bên trái) ---
+            int secondarySize = (int)(Width * 0.1);
+            int sX = (int)(Width * 0.05);
+            int sY = (int)(Height * 0.85) - secondarySize;
+
+            var secondaryRect = new Rectangle(sX, sY, secondarySize, secondarySize);
+
+            using (var secondaryBrush = new LinearGradientBrush(
+                secondaryRect,
+                Color.FromArgb(50, Color.White), // Độ mờ giảm
+                Color.FromArgb(0, Color.Transparent),
+                LinearGradientMode.ForwardDiagonal
+            ))
+            {
+                e.Graphics.FillEllipse(secondaryBrush, secondaryRect);
             }
         }
 

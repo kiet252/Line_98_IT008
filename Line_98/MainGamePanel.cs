@@ -23,6 +23,9 @@ namespace Line_98
         //Tạo 1 bảng gồm 9*9 Cells (button) độ lớn 9x9
         private GameCell[,] BoardCells = new GameCell[9, 9];
 
+        //Hằng quyết định màu từng ô
+        private Color CellBaseColor = Color.LightBlue;
+
         //Tạo bảng CellBoard(Panel) chứa 9*9 Cells
         private Panel CellBoard;
         private int CellSize = 0;
@@ -50,7 +53,7 @@ namespace Line_98
         static internal Color[] GameColor = {
             Color.LightGray, //0 - Màu ô rỗng (Không xóa!)
             Color.Red,
-            Color.Green,
+            Color.LimeGreen,
             Color.Blue,
             Color.Gold,
             Color.DarkRed,
@@ -206,6 +209,7 @@ namespace Line_98
                 {
                     //Khởi tạo từng Cell
                     GameCell Cell = new GameCell(CellSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
+                    Cell.BackColor = CellBaseColor;
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
@@ -244,6 +248,9 @@ namespace Line_98
 
                 //Hiển thị ô đang được chọn có border màu đỏ (Về sau có thể đổi lại thành animation nảy nảy hoặc khác)
                 FirstSelectedCell.GetSelected();
+
+                //Âm thanh chọn banh
+                GameSound.PlaySelectSound();
             }
             else
             //Trường hợp 2: Chọn ô khác
@@ -254,6 +261,9 @@ namespace Line_98
                     //Đổi kích thước banh về kích thước ban đầu
                     Clicked_Cell.GetUnselected();
                     ResetSelection();
+
+                    //Âm thanh chọn banh
+                    GameSound.PlaySelectSound();
                 }
                 //Không phải thì tiến hành di chuyển 
                 else if (BoardColor[Clicked_Cell.X_Pos, Clicked_Cell.Y_Pos] <= 0)
@@ -267,6 +277,9 @@ namespace Line_98
                     FirstSelectedCell.GetUnselected();
                     FirstSelectedCell = Clicked_Cell;
                     Clicked_Cell.GetSelected();
+
+                    //Âm thanh chọn banh
+                    GameSound.PlaySelectSound();
                 }
             }
 
@@ -341,7 +354,7 @@ namespace Line_98
             // Tạo banh tạm thời cho animation
             animationBall = new GameBall(GameColor[Math.Abs(movingBallColor)]);
             animationBall.Size = new Size(CellSize, CellSize);
-            animationBall.BackColor = Color.Transparent;
+            animationBall.BackColor = CellBaseColor;
             animationBall.Enlarge();
 
             // Đặt vị trí ban đầu
