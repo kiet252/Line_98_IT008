@@ -114,10 +114,10 @@ namespace Line_98
                 using (var baseBrush = new PathGradientBrush(path))
                 {
                     // Màu trung tâm: Khu vực sáng nhất
-                    Color centerColor = ColorExtensions.Lighten(MyColor, 0.5f);
+                    Color centerColor = Utilities.ColorExtensions.Lighten(MyColor, 0.5f);
 
                     // Màu xung quanh: Bóng tối sâu/cạnh tối
-                    Color darkEdgeColor = ColorExtensions.Darken(MyColor, 0.6f);
+                    Color darkEdgeColor = Utilities.ColorExtensions.Darken(MyColor, 0.6f);
 
                     baseBrush.CenterColor = centerColor;
                     baseBrush.SurroundColors = new Color[] { darkEdgeColor };
@@ -167,7 +167,7 @@ namespace Line_98
 
             using (var rimBrush = new LinearGradientBrush(
                 rimRect,
-                ColorExtensions.Lighten(MyColor, 0.6f), // Màu sáng cao
+                Utilities.ColorExtensions.Lighten(MyColor, 0.6f), // Màu sáng cao
                 Color.FromArgb(0, Color.Transparent),   // Chuyển dần sang trong suốt
                 LinearGradientMode.ForwardDiagonal // Hướng gradient từ sáng ra ngoài
             ))
@@ -176,7 +176,7 @@ namespace Line_98
                 ColorBlend blend = new ColorBlend();
                 blend.Colors = new Color[] {
                 Color.FromArgb(0, Color.Transparent),   // Phần lớn hình cầu
-                Color.FromArgb(50, ColorExtensions.Lighten(MyColor, 0.6f)), // Dải sáng mờ
+                Color.FromArgb(50, Utilities.ColorExtensions.Lighten(MyColor, 0.6f)), // Dải sáng mờ
                 Color.FromArgb(0, Color.Transparent)    // Phía bên kia
             };
                 // Tạo dải sáng hẹp, mờ ở rìa
