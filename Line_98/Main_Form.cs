@@ -24,6 +24,10 @@ namespace Line_98
         {
             mainGamePanel = new MainGamePanel(this);
             this.Controls.Add(mainGamePanel);
+
+            //Hiện luật chơi ngay khi mở trò chơi
+            fHowToPlay help = new fHowToPlay();
+            help.Show();
         }
 
         /// <summary>
