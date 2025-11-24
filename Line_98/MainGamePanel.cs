@@ -562,7 +562,7 @@ namespace Line_98
                         // Hiển thị điểm lên Main_Form
                         ScoreAndDisplayUpdate(gamePoint);
                     }
-                }
+                } 
             }
         }
 

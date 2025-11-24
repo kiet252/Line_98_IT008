@@ -45,8 +45,6 @@ namespace Line_98
 
                 SaveAndLoad.save(saveGame.FileName, mainGamePanel);
             }
-
-            this.Close();
         }
 
         /// <summary>
