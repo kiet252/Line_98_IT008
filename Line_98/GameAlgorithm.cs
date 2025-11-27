@@ -1,0 +1,112 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Line_98
+{
+    internal class GameAlgorithm
+    {
+        /// <summary>
+        /// Kiểm tra xem có di chuyển được đến ô đã chọn
+        /// </summary>
+        /// <param name="StartPoint"></param>
+        /// <param name="EndPoint"></param>
+        /// <returns></returns>
+        internal static bool CanMoveBall(Point StartPoint, Point EndPoint, ref int[,] BoardColor)
+        {
+            int[] dx = { 1, -1, 0, 0 };
+            int[] dy = { 0, 0, 1, -1 };
+            bool[,] visited = new bool[9, 9];
+            //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
+            Queue<Point> CheckQueue = new Queue<Point>();
+            CheckQueue.Enqueue(StartPoint);
+
+            while (CheckQueue.Count > 0)
+            {
+                Point point = CheckQueue.First();
+                CheckQueue.Dequeue();
+
+                //Nếu đã đến được đích thì kết luận có thể đến
+                if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
+                for (int k = 0; k < 4; k++)
+                {
+                    int New_X = point.X + dx[k];
+                    int New_Y = point.Y + dy[k];
+                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] <= 0)
+                    {
+                        visited[New_X, New_Y] = true;
+                        Point NextPoint = new Point(New_X, New_Y);
+                        CheckQueue.Enqueue(NextPoint);
+                    }
+                }
+            }
+            //Không đến được đích
+            return false;
+        }
+
+        /// <summary>
+        /// Tìm đường đi từ start đến end cho animation
+        /// </summary>
+        internal static List<Point> FindPath(Point start, Point end, ref int[,] BoardColor)
+        {
+            int[] dx = { 1, -1, 0, 0 };
+            int[] dy = { 0, 0, 1, -1 };
+
+            bool[,] visited = new bool[9, 9];
+            Point[,] parent = new Point[9, 9];
+            Queue<Point> queue = new Queue<Point>();
+
+            queue.Enqueue(start);
+            visited[start.X, start.Y] = true;
+            parent[start.X, start.Y] = new Point(-1, -1);
+
+            while (queue.Count > 0)
+            {
+                Point current = queue.Dequeue();
+
+                if (current.X == end.X && current.Y == end.Y)
+                {
+                    return ReconstructPath(parent, start, end);
+                }
+
+                for (int k = 0; k < 4; k++)
+                {
+                    int newX = current.X + dx[k];
+                    int newY = current.Y + dy[k];
+
+                    if (newX >= 0 && newY >= 0 && newX < 9 && newY < 9 &&
+                        !visited[newX, newY] && BoardColor[newX, newY] <= 0)
+                    {
+                        visited[newX, newY] = true;
+                        parent[newX, newY] = current;
+                        queue.Enqueue(new Point(newX, newY));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Xây dựng đường đi cho animation
+        /// </summary>
+        internal static List<Point> ReconstructPath(Point[,] parent, Point start, Point end)
+        {
+            List<Point> path = new List<Point>();
+            Point current = end;
+
+            while (current.X != -1 && current.Y != -1)
+            {
+                path.Add(current);
+                current = parent[current.X, current.Y];
+            }
+
+            path.Reverse();
+            return path;
+        }
+    }
+}

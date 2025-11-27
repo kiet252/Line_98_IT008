@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,6 +54,69 @@ namespace Line_98
 
             // Tránh bị Tab focus 
             this.TabStop = false;
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e); // Gọi phương thức OnPaint của lớp cơ sở
+
+            // Kích hoạt khử răng cưa để các đường vẽ mịn hơn
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
+            // Định nghĩa màu nền Seashell
+            Color baseColor = this.BackColor; // #FFF5EE
+
+            // Định nghĩa màu cho shading (tối hơn một chút và xanh xám)
+            Color darkerBaseColor = Color.FromArgb(
+                (int)(baseColor.R * 0.95), // Giảm nhẹ kênh R
+                (int)(baseColor.G * 0.95), // Giảm nhẹ kênh G
+                (int)(baseColor.B * 0.95)  // Giảm nhẹ kênh B
+            );
+            Color bluishGray = Color.FromArgb(220, 230, 240); // Một màu xanh xám rất nhạt và mềm mại
+
+            // Giả sử "gameCell" là chính Control hiện tại (this).
+            // Kích thước của ô vuông là Width và Height của Control.
+            var squareRect = new Rectangle(0, 0, Width - 1, Height - 1);
+
+            // --- 1. Vẽ nền phẳng màu Seashell ---
+            using (var solidBrush = new SolidBrush(baseColor))
+            {
+                e.Graphics.FillRectangle(solidBrush, squareRect);
+            }
+
+            // --- 2. Áp dụng shading mềm mại cho cạnh phải ---
+            // Gradient dọc từ màu hơi tối hơn sang xanh xám
+            // Tạo một dải hẹp ở cạnh phải
+            int shadeWidth = (int)(Width * 0.1); // Chiều rộng của dải shading (ví dụ 10% chiều rộng của ô)
+            if (shadeWidth < 1) shadeWidth = 1; // Đảm bảo không quá nhỏ
+
+            var rightShadeRect = new Rectangle(Width - shadeWidth, 0, shadeWidth, Height);
+            using (var rightBrush = new LinearGradientBrush(
+                rightShadeRect,
+                darkerBaseColor,      // Bắt đầu từ màu hơi tối
+                bluishGray,          // Chuyển sang xanh xám ở rìa ngoài
+                LinearGradientMode.Vertical // Gradient dọc
+            ))
+            {
+                e.Graphics.FillRectangle(rightBrush, rightShadeRect);
+            }
+
+            // --- 3. Áp dụng shading mềm mại cho cạnh dưới ---
+            // Gradient ngang từ màu hơi tối hơn Seashell sang xanh xám
+            // Tạo một dải hẹp ở cạnh dưới
+            int shadeHeight = (int)(Height * 0.1); // Chiều cao của dải shading
+            if (shadeHeight < 1) shadeHeight = 1; // Đảm bảo không quá nhỏ
+
+            var bottomShadeRect = new Rectangle(0, Height - shadeHeight, Width, shadeHeight);
+            using (var bottomBrush = new LinearGradientBrush(
+                bottomShadeRect,
+                darkerBaseColor,      // Bắt đầu từ màu hơi tối
+                bluishGray,          // Chuyển sang xanh xám ở rìa ngoài
+                LinearGradientMode.Horizontal // Gradient ngang
+            ))
+            {
+                e.Graphics.FillRectangle(bottomBrush, bottomShadeRect);
+            }
         }
 
         /// <summary>

@@ -63,6 +63,15 @@ namespace Line_98.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
         /// </summary>
+        internal static System.IO.UnmanagedMemoryStream cantmove {
+            get {
+                return ResourceManager.GetStream("cantmove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
         internal static System.IO.UnmanagedMemoryStream ding {
             get {
                 return ResourceManager.GetStream("ding", resourceCulture);
@@ -76,6 +85,24 @@ namespace Line_98.Properties {
             get {
                 object obj = ResourceManager.GetObject("Logo_UIT", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream move {
+            get {
+                return ResourceManager.GetStream("move", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream select {
+            get {
+                return ResourceManager.GetStream("select", resourceCulture);
             }
         }
         

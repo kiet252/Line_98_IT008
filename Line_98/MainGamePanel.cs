@@ -23,6 +23,9 @@ namespace Line_98
         //Tạo 1 bảng gồm 9*9 Cells (button) độ lớn 9x9
         private GameCell[,] BoardCells = new GameCell[9, 9];
 
+        //Hằng quyết định màu từng ô
+        private Color CellBaseColor = Color.LightBlue;
+
         //Tạo bảng CellBoard(Panel) chứa 9*9 Cells
         private Panel CellBoard;
         private int CellSize = 0;
@@ -50,7 +53,7 @@ namespace Line_98
         static internal Color[] GameColor = {
             Color.LightGray, //0 - Màu ô rỗng (Không xóa!)
             Color.Red,
-            Color.Green,
+            Color.LimeGreen,
             Color.Blue,
             Color.Gold,
             Color.DarkRed,
@@ -206,6 +209,7 @@ namespace Line_98
                 {
                     //Khởi tạo từng Cell
                     GameCell Cell = new GameCell(CellSize, new Point(Col * CellSize, Row * CellSize), new Point(Row, Col));
+                    Cell.BackColor = CellBaseColor;
                     //Tham chiếu Cell mới vào Cell trong CellBoard, để có thể sử dụng trong các method sau
                     BoardCells[Row, Col] = Cell;
 
@@ -244,6 +248,9 @@ namespace Line_98
 
                 //Hiển thị ô đang được chọn có border màu đỏ (Về sau có thể đổi lại thành animation nảy nảy hoặc khác)
                 FirstSelectedCell.GetSelected();
+
+                //Âm thanh chọn banh
+                GameSound.PlaySelectSound();
             }
             else
             //Trường hợp 2: Chọn ô khác
@@ -254,12 +261,25 @@ namespace Line_98
                     //Đổi kích thước banh về kích thước ban đầu
                     Clicked_Cell.GetUnselected();
                     ResetSelection();
+
+                    //Âm thanh chọn banh
+                    GameSound.PlaySelectSound();
                 }
                 //Không phải thì tiến hành di chuyển 
                 else if (BoardColor[Clicked_Cell.X_Pos, Clicked_Cell.Y_Pos] <= 0)
                 {
                     //Di chuyển banh
-                    MoveBall(FirstSelectedCell, Clicked_Cell);          
+                    MoveBall(FirstSelectedCell, Clicked_Cell);
+                }
+                else
+                {
+                    //Nếu chọn một banh khác, chuyển lựa chọn sang bang được chọn tiếp theo
+                    FirstSelectedCell.GetUnselected();
+                    FirstSelectedCell = Clicked_Cell;
+                    Clicked_Cell.GetSelected();
+
+                    //Âm thanh chọn banh
+                    GameSound.PlaySelectSound();
                 }
             }
 
@@ -271,7 +291,7 @@ namespace Line_98
         /// <param name="Src"></param>
         /// <param name="Des"></param>
         /// <returns></returns>
-        private bool MoveBall(GameCell Src, GameCell Des)
+        internal bool MoveBall(GameCell Src, GameCell Des)
         {
             //Lấy vị trí của ô nguồn và ô đích
             int Src_x = Src.X_Pos;
@@ -281,12 +301,15 @@ namespace Line_98
             int Des_y = Des.Y_Pos;
 
             //Kiểm tra xem đến được đích không
-            bool CanMoveToDes = CanMoveBall(new Point(Src_x, Src_y), new Point(Des_x, Des_y));
-            
+            bool CanMoveToDes = GameAlgorithm.CanMoveBall(new Point(Src_x, Src_y), new Point(Des_x, Des_y), ref BoardColor);
+
             if (CanMoveToDes)
             {
                 // Lấy màu của ball từ ô nguồn
                 int color = BoardColor[Src_x, Src_y];
+
+                //Âm thanh banh di chuyển
+                GameSound.PlayMoveSound();
 
                 //Animation chạy banh
                 CreateMoveAnimation(Src, Des);
@@ -294,16 +317,17 @@ namespace Line_98
                 //Xóa ball ở ô nguồn
                 BoardColor[Src_x, Src_y] = 0;
                 Src.RemoveBall();
+
+                // Reset chọn sau khi di chuyển
+                this.Focus();
+                ResetSelection();
             }
             else
             {
-                //Không đến được đích (Về sau có thể đổi thành âm thanh)
-                MessageBox.Show("Không thể di chuyển đến ô đã chọn!");
+                //Không đến được đích
+                GameSound.PlayCantMoveSound();
             }
-
-            this.Focus();
-            // Reset chọn sau khi di chuyển
-            ResetSelection();
+            
             return CanMoveToDes;
         }
 
@@ -313,7 +337,7 @@ namespace Line_98
         private void CreateMoveAnimation(GameCell src, GameCell dest)
         {
             // Tìm đường đi
-            List<Point> path = FindPath(new Point(src.X_Pos, src.Y_Pos), new Point(dest.X_Pos, dest.Y_Pos));
+            List<Point> path = GameAlgorithm.FindPath(new Point(src.X_Pos, src.Y_Pos), new Point(dest.X_Pos, dest.Y_Pos), ref BoardColor);
 
             if (path == null || path.Count < 2)
             {
@@ -330,7 +354,7 @@ namespace Line_98
             // Tạo banh tạm thời cho animation
             animationBall = new GameBall(GameColor[Math.Abs(movingBallColor)]);
             animationBall.Size = new Size(CellSize, CellSize);
-            animationBall.BackColor = Color.Transparent;
+            animationBall.BackColor = CellBaseColor;
             animationBall.Enlarge();
 
             // Đặt vị trí ban đầu
@@ -342,67 +366,6 @@ namespace Line_98
 
             // Bắt đầu animation
             StartPathAnimation(path);
-        }
-
-        /// <summary>
-        /// Tìm đường đi từ start đến end cho animation
-        /// </summary>
-        private List<Point> FindPath(Point start, Point end)
-        {
-            int[] dx = { 1, -1, 0, 0 };
-            int[] dy = { 0, 0, 1, -1 };
-
-            bool[,] visited = new bool[9, 9];
-            Point[,] parent = new Point[9, 9];
-            Queue<Point> queue = new Queue<Point>();
-
-            queue.Enqueue(start);
-            visited[start.X, start.Y] = true;
-            parent[start.X, start.Y] = new Point(-1, -1);
-
-            while (queue.Count > 0)
-            {
-                Point current = queue.Dequeue();
-
-                if (current.X == end.X && current.Y == end.Y)
-                {
-                    return ReconstructPath(parent, start, end);
-                }
-
-                for (int k = 0; k < 4; k++)
-                {
-                    int newX = current.X + dx[k];
-                    int newY = current.Y + dy[k];
-
-                    if (newX >= 0 && newY >= 0 && newX < 9 && newY < 9 &&
-                        !visited[newX, newY] && BoardColor[newX, newY] <= 0)
-                    {
-                        visited[newX, newY] = true;
-                        parent[newX, newY] = current;
-                        queue.Enqueue(new Point(newX, newY));
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Xây dựng đường đi cho animation
-        /// </summary>
-        private List<Point> ReconstructPath(Point[,] parent, Point start, Point end)
-        {
-            List<Point> path = new List<Point>();
-            Point current = end;
-
-            while (current.X != -1 && current.Y != -1)
-            {
-                path.Add(current);
-                current = parent[current.X, current.Y];
-            }
-
-            path.Reverse();
-            return path;
         }
 
         /// <summary>
@@ -518,44 +481,7 @@ namespace Line_98
             sourceCell = null;
             destinationCell = null;
         }
-
-        /// <summary>
-        /// Kiểm tra xem có di chuyển được đến ô đã chọn
-        /// </summary>
-        /// <param name="StartPoint"></param>
-        /// <param name="EndPoint"></param>
-        /// <returns></returns>
-        private bool CanMoveBall(Point StartPoint, Point EndPoint)
-        {
-            int[] dx = { 1, -1, 0, 0 };
-            int[] dy = { 0, 0, 1, -1 };
-            bool[,] visited = new bool[9, 9];
-            //Duyệt BFS xem có thể đến được đích từ điểm bắt đầu
-            Queue<Point> CheckQueue = new Queue<Point>();
-            CheckQueue.Enqueue(StartPoint);
-
-            while (CheckQueue.Count > 0)
-            {
-                Point point = CheckQueue.First();
-                CheckQueue.Dequeue();
-
-                //Nếu đã đến được đích thì kết luận có thể đến
-                if (point.X == EndPoint.X && point.Y == EndPoint.Y) return true;
-                for (int k = 0; k < 4; k++)
-                {
-                    int New_X = point.X + dx[k];
-                    int New_Y = point.Y + dy[k];
-                    if (New_X >= 0 && New_Y >= 0 && New_X < 9 && New_Y < 9 && !visited[New_X, New_Y] && BoardColor[New_X, New_Y] <= 0) 
-                    {
-                        visited[New_X, New_Y] = true;
-                        Point NextPoint = new Point(New_X, New_Y);
-                        CheckQueue.Enqueue(NextPoint);
-                    }
-                }
-            }
-            //Không đến được đích
-            return false;
-        }
+        
         /// <summary>
         /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu
         /// </summary>
@@ -636,7 +562,7 @@ namespace Line_98
                         // Hiển thị điểm lên Main_Form
                         ScoreAndDisplayUpdate(gamePoint);
                     }
-                }
+                } 
             }
         }
 
@@ -730,8 +656,7 @@ namespace Line_98
                     BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
                     cell.RemoveBall();
                 }
-                SoundPlayer player = new SoundPlayer(Properties.Resources.ding); // Âm thanh ding.wav
-                player.Play();
+                GameSound.PlayDestroySound();
             }
 
             return g_Point;
