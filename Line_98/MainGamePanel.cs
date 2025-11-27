@@ -65,22 +65,6 @@ namespace Line_98
         private const int MaxBallsPerGeneration = 3;
         private const int MaxBallsPerInitialization = 7;
 
-        /// <summary>
-        /// Bảng ánh xạ điểm cho số lượng banh thẳng hàng
-        /// </summary>
-        /// <remarks>
-        /// Index: số banh, Value: điểm tương ứng
-        /// Ví dụ: scores[5] = 5, scores[6] = 11, ...
-        /// </remarks>
-        private readonly Dictionary<int, int> ScoreMap = new Dictionary<int, int>
-        {
-            {5, 5},
-            {6, 11},
-            {7, 18},
-            {8, 26},
-            {9, 35}
-        };
-
         //Biến theo dõi xem ô nào mới được chọn, vị trí ô mới được chọn
         private GameCell FirstSelectedCell = null;
 
@@ -670,9 +654,8 @@ namespace Line_98
             if (numBall < 5)
                 return;
 
-            gameScore += ScoreMap[numBall]; 
-            // gameScore += (numBall - 4) * (numball + 5) / 2;
-            
+             gameScore += (numBall - 4) * (numBall + 5) / 2;
+
             RepaintCurrentScore();
 
         } 
