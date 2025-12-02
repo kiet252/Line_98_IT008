@@ -590,7 +590,10 @@ namespace Line_98
             if (numBall < 5)
                 return;
 
-            gameScore += (numBall - 4) * (numBall + 5) / 2;
+             gameScore += (numBall - 4) * (numBall + 5) / 2;
+
+            
+            
             
             RepaintCurrentScore();
 
