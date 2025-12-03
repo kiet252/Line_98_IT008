@@ -108,5 +108,77 @@ namespace Line_98
             path.Reverse();
             return path;
         }
+
+        /// <summary>
+        /// Kiểm tra xem có ăn được banh không 
+        /// </summary>
+        /// <param name="Src"></param>
+        /// <returns>
+        /// Trả về số banh ăn được
+        /// </returns>
+        public static int CheckAndRemoveBall(GameCell Src, ref int[,] BoardColor, ref GameCell[,] BoardCells)
+        {
+            int r = Src.X_Pos;
+            int c = Src.Y_Pos;
+            int color = BoardColor[r, c];
+
+            int g_Point = 0; // Điểm số là số banh ăn được 
+
+            // Các hướng: ngang, dọc, chéo chính, chéo phụ
+            int[] dx = { 0, 1, 1, 1 };
+            int[] dy = { 1, 0, 1, -1 };
+            bool isRemoveable = false;
+            List<GameCell> toRemove = new List<GameCell>();
+
+            for (int dir = 0; dir < 4; ++dir)
+            {
+                List<GameCell> line = new List<GameCell>();
+                line.Add(Src);
+
+                // đi xuôi hướng
+                int x = r + dx[dir];
+                int y = c + dy[dir];
+                while (x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x, y] > 0)
+                {
+                    line.Add(BoardCells[x, y]);
+                    x += dx[dir];
+                    y += dy[dir];
+                }
+
+                // đi ngược hướng
+                x = r - dx[dir];
+                y = c - dy[dir];
+                while (x >= 0 && x < 9 && y >= 0 && y < 9 && BoardColor[x, y] == color && BoardColor[x, y] > 0)
+                {
+                    line.Add(BoardCells[x, y]);
+                    x -= dx[dir];
+                    y -= dy[dir];
+                }
+
+                // Nếu có ≥ 5 quả liên tiếp cùng màu
+                if (line.Count >= 5)
+                {
+                    isRemoveable = true;
+                    foreach (GameCell cell in line)
+                    {
+                        toRemove.Add(cell);
+                    }
+                }
+            }
+
+            // Xóa banh
+            if (isRemoveable)
+            {
+                g_Point += toRemove.Count;
+                foreach (GameCell cell in toRemove)
+                {
+                    BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
+                    cell.RemoveBall();
+                }
+                GameSound.PlayDestroySound();
+            }
+
+            return g_Point;
+        }
     }
 }
