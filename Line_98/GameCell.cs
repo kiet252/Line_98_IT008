@@ -125,14 +125,11 @@ namespace Line_98
         /// <param name="ColorType"></param>
         public void ApplyColorToCell(int ColorType = 0)
         {
-
-            if (ColorType > 0)
-            {
-                //Nếu ô không rỗng, hiến thị ball
-                Ball.Visible = true;
-                Ball.myColor = MainGamePanel.GameColor[ColorType];
-                this.GetUnselected();
-            }
+            if (ColorType < 0) ColorType = -ColorType; //Nếu màu mang giá trị âm thì đổi thành giá trị màu dương
+             //Nếu ô không rỗng, hiến thị ball
+             Ball.Visible = true;
+             Ball.myColor = MainGamePanel.GameColor[ColorType];
+             this.GetUnselected();
         }
 
         /// <summary>

@@ -192,10 +192,11 @@ namespace Line_98
         /// <param name="BoardColor"></param>
         public static void GetPrevBoard(int[,] BoardColor, int score) {
             //Array.Copy(BoardColor, PrevBoardColor, BoardColor.Length);
+            Console.WriteLine("Save: ");
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     PrevBoardColor[i, j] = BoardColor[i, j];
-                    Console.Write(BoardColor[i,j].ToString() + " ");
+                    Console.Write($"{BoardColor[i, j].ToString(), 3}");
                 }
                 Console.WriteLine();
             }
@@ -210,18 +211,9 @@ namespace Line_98
         public static void Undo(ref MainGamePanel panel) {
             for (int i = 0; i < 9; ++i) {
                 for(int j = 0; j < 9; ++j) {
-                    panel.setGameBoardColor(i, j, PrevBoardColor[i, j]);
+                    panel.setGameBoardColor(j, i, PrevBoardColor[j, i]);
                 }
             }
-
-            //Console.WriteLine("After:");
-            //int [,] tmp = panel.GameBoardColor;
-            //for (int i = 0; i < 9; ++i) {
-            //    for (int j = 0; j < 9; ++j) {
-            //        Console.Write(tmp[i, j].ToString() + " ");
-            //    }
-            //    Console.WriteLine();
-            //}
 
             panel.GameScore = GameScore;
         }
