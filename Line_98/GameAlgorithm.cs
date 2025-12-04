@@ -10,6 +10,11 @@ namespace Line_98
 {
     internal class GameAlgorithm
     {
+        //Bảng banh trước khi di chuyển
+        private static int[,] PrevBoardColor = new int[9,9];
+        //Điểm trước khi di chuyển
+        private static int GameScore;
+
         /// <summary>
         /// Kiểm tra xem có di chuyển được đến ô đã chọn
         /// </summary>
@@ -179,6 +184,46 @@ namespace Line_98
             }
 
             return g_Point;
+        }
+
+        /// <summary>
+        /// Lấy bảng màu banh trước khi di chuyển 
+        /// </summary>
+        /// <param name="BoardColor"></param>
+        public static void GetPrevBoard(int[,] BoardColor, int score) {
+            //Array.Copy(BoardColor, PrevBoardColor, BoardColor.Length);
+            for (int i = 0; i < 9; ++i) {
+                for (int j = 0; j < 9; ++j) {
+                    PrevBoardColor[i, j] = BoardColor[i, j];
+                    Console.Write(BoardColor[i,j].ToString() + " ");
+                }
+                Console.WriteLine();
+            }
+            GameScore = score;
+            Console.WriteLine("\n");
+        }
+
+        /// <summary>
+        /// Quay lại bước đi trước đó
+        /// </summary>
+        /// <param name="panel"></param>
+        public static void Undo(ref MainGamePanel panel) {
+            for (int i = 0; i < 9; ++i) {
+                for(int j = 0; j < 9; ++j) {
+                    panel.setGameBoardColor(i, j, PrevBoardColor[i, j]);
+                }
+            }
+
+            //Console.WriteLine("After:");
+            //int [,] tmp = panel.GameBoardColor;
+            //for (int i = 0; i < 9; ++i) {
+            //    for (int j = 0; j < 9; ++j) {
+            //        Console.Write(tmp[i, j].ToString() + " ");
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            panel.GameScore = GameScore;
         }
     }
 }

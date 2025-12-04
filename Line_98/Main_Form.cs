@@ -43,7 +43,7 @@ namespace Line_98
 
             if(r == DialogResult.OK) {
 
-                SaveAndLoad.save(saveGame.FileName, mainGamePanel);
+                SaveAndLoad.Save(saveGame.FileName, mainGamePanel);
             }
         }
 
@@ -58,19 +58,25 @@ namespace Line_98
             DialogResult r = this.loadGame.ShowDialog();
 
             if (r == DialogResult.OK) { 
-                SaveAndLoad.load(loadGame.FileName, mainGamePanel);
+                SaveAndLoad.Load(loadGame.FileName, mainGamePanel);
             }
         }
 
         /// <summary>
         /// MenuStrip để hoàn lại bước đi trước đó
         /// Chỉ hoàn lại được 1 lần 
+        /// Mỗi lần Undo tăng thêm 30 giây
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
         private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
-            throw new NotImplementedException(); //Nào rảnh làm 
+            GameAlgorithm.Undo(ref mainGamePanel);
+            mainGamePanel.GameTime += 30;
+
+            mainGamePanel.Invalidate();
+            mainGamePanel.Refresh();
+            mainGamePanel.RepaintCurrentScore();
+            mainGamePanel.RepaintGameTime();
         }
 
         /// <summary>

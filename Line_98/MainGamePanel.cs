@@ -84,9 +84,10 @@ namespace Line_98
         //Display
         // Điểm số
         private int gameScore;
+        private int gameHishtestScore;
         private PictureBox[] currentScore = new PictureBox[5];          // Điểm số hiện tại 
         private PictureBox[] highestScore = new PictureBox[5];          // Điểm số cao nhất
-        private PictureBox[] gameTime = new PictureBox[4];              // Thời gian
+        private PictureBox[] gameTime = new PictureBox[5];              // Thời gian
         private Timer gameTimer = new Timer();
         private int gameTimeSec = 0;                                    // Thời gian ván game (đơn vị: giây)
         public int GameTime { get { return gameTimeSec; } set { gameTimeSec = value; } }// Lấy thông tin thời gian 
@@ -116,6 +117,8 @@ namespace Line_98
             this.Size = new Size(700, 800);
             //this.BackColor = Color.Black;
 
+            gameTimer.Interval = 1000;
+
             InitializePanel();
 
             //
@@ -141,6 +144,9 @@ namespace Line_98
             RepaintHighestScore();
             //Hiển thị thời gian lên Panel
             RepaintGameTime();
+
+            //Lưu vào bảng PrevBroadColor để Undo
+            GameAlgorithm.GetPrevBoard(BoardColor, 0);
 
             this.Invalidate();
         }
@@ -186,7 +192,6 @@ namespace Line_98
 
         void InitializeBoard()
         {
-
             for (int Row = 0; Row < 9; Row++)
             {
                 for (int Col = 0; Col < 9; Col++)
@@ -289,8 +294,8 @@ namespace Line_98
 
             if (CanMoveToDes)
             {
-                // Lấy màu của ball từ ô nguồn
-                int color = BoardColor[Src_x, Src_y];
+                //Lấy bảng màu banh trước khi di chuyển
+                GameAlgorithm.GetPrevBoard(BoardColor, gameScore);
 
                 //Âm thanh banh di chuyển
                 GameSound.PlayMoveSound();
@@ -503,10 +508,11 @@ namespace Line_98
 
             while (SuccessCount < MaxBallsPerGeneration)
             {
-                // Thua
-                if (Game_Lose())
+                // Kết thúc
+                if (isFinished())
                 {
-                    MessageBox.Show("You Lose");
+                    gameTimer.Stop();
+                    GameEnd();
                     Environment.Exit(0);
                 }
                 //Tìm vị trí ngẫu nhiên để tạo banh
@@ -568,7 +574,7 @@ namespace Line_98
         /// <returns>
         /// true nếu thua, false nếu chưa thua
         /// </returns>
-        private bool Game_Lose()
+        private bool isFinished()
         {
 
             foreach (GameCell cell in BoardCells)
@@ -592,9 +598,6 @@ namespace Line_98
 
              gameScore += (numBall - 4) * (numBall + 5) / 2;
 
-            
-            
-            
             RepaintCurrentScore();
 
         } 
@@ -646,7 +649,7 @@ namespace Line_98
         /// Cập nhật điểm số cao nhất (Cập nhật lại sau khi thêm Database)
         /// </summary>
         private void RepaintHighestScore() {
-            int[] digits = Number.Split(); //!!!!!!
+            int[] digits = Number.Split(gameHishtestScore);
 
             for(int i = 0; i < 5; ++i) {
                 highestScore[i].Image = Number.bmpSCORE_Digits[digits[i]];
@@ -657,9 +660,9 @@ namespace Line_98
         /// Thêm PictureBox thể hiện thời gian
         /// </summary>
         private void BuildGameTime() {
-            int timePos = this.Width / 2 - 30;
+            int timePos = this.Width / 2 - 38;
 
-            for (int i = 0; i < 4; ++i) {
+            for (int i = 0; i < 5; ++i) {
                 gameTime[i] = new PictureBox();
                 gameTime[i].BackColor = this.BackColor;
                 gameTime[i].Location = new Point(timePos + 10 * i, 40);
@@ -672,10 +675,10 @@ namespace Line_98
         /// <summary>
         /// Cập nhật thời gian
         /// </summary>
-        private void RepaintGameTime() {
+        public void RepaintGameTime() {
             int[] digit = Number.Split(gameTimeSec);
 
-            for(int i = 0; i < 4; ++i) {
+            for(int i = 0; i < 5; ++i) {
                 gameTime[i].Image = Number.bmpTIME_Digits[digit[i]];
             }
         }
@@ -688,6 +691,22 @@ namespace Line_98
         private void GameTimer_Tick(object sender, EventArgs e) {
             gameTimeSec++;
             RepaintGameTime();
+        }
+
+        /// <summary>
+        /// Hiển thị thông báo cho người chơi biết game đã kết thúc
+        /// Đồng thời hiển thị thời gian và điểm số
+        /// </summary>
+        private void GameEnd() {
+            if(gameScore > gameHishtestScore) {
+                MessageBox.Show("Chúc mừng bạn đạt được điểm cao nhất!\n" +
+                    $"Điểm của bạn là: {gameScore}\n" +
+                    $"Tổng thời gian chơi: {gameTimeSec}", "WIN");
+            } else {
+                MessageBox.Show("Cố gắng vượt điểm cao nhất nhé!\n" +
+                    $"Điểm của bạn là: {gameScore}\n" +
+                    $"Tổng thời gian chơi: {gameTimeSec}", "LOSE");
+            }
         }
     }
 }
