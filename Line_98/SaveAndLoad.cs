@@ -13,7 +13,7 @@ namespace Line_98 {
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="g"></param>
-        public static void save(string filename, MainGamePanel g) {
+        public static void Save(string filename, MainGamePanel g) {
             using (BinaryWriter w = new BinaryWriter(File.Open(filename, FileMode.Create))) {
                 w.Write(g.GameScore);
                 w.Write(g.GameTime);
@@ -31,7 +31,7 @@ namespace Line_98 {
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="g"></param>
-        public static void load(string filename, MainGamePanel g) {
+        public static void Load(string filename, MainGamePanel g) {
             using (BinaryReader r = new BinaryReader(File.Open(filename, FileMode.Open))) { 
                 g.GameScore = r.ReadInt32();
                 g.GameTime = r.ReadInt32();
