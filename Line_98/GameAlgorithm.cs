@@ -191,17 +191,12 @@ namespace Line_98
         /// </summary>
         /// <param name="BoardColor"></param>
         public static void GetPrevBoard(int[,] BoardColor, int score) {
-            //Array.Copy(BoardColor, PrevBoardColor, BoardColor.Length);
-            Console.WriteLine("Save: ");
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     PrevBoardColor[i, j] = BoardColor[i, j];
-                    Console.Write($"{BoardColor[i, j].ToString(), 3}");
                 }
-                Console.WriteLine();
             }
             GameScore = score;
-            Console.WriteLine("\n");
         }
 
         /// <summary>

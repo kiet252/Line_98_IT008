@@ -118,7 +118,7 @@ namespace Line_98
             //this.BackColor = Color.Black;
 
             gameTimer.Interval = 1000;
-
+            
             InitializePanel();
 
             //
@@ -513,8 +513,9 @@ namespace Line_98
                 {
                     gameTimer.Stop();
                     GameEnd();
-                    Environment.Exit(0);
+                    return;
                 }
+
                 //Tìm vị trí ngẫu nhiên để tạo banh
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
@@ -701,12 +702,41 @@ namespace Line_98
             if(gameScore > gameHishtestScore) {
                 MessageBox.Show("Chúc mừng bạn đạt được điểm cao nhất!\n" +
                     $"Điểm của bạn là: {gameScore}\n" +
-                    $"Tổng thời gian chơi: {gameTimeSec}", "WIN");
+                    $"Tổng thời gian chơi: {gameTimeSec}", "WIN", MessageBoxButtons.OK);
             } else {
                 MessageBox.Show("Cố gắng vượt điểm cao nhất nhé!\n" +
                     $"Điểm của bạn là: {gameScore}\n" +
-                    $"Tổng thời gian chơi: {gameTimeSec}", "LOSE");
+                    $"Tổng thời gian chơi: {gameTimeSec}", "LOSE", MessageBoxButtons.OK);
             }
+
+            DialogResult ContinueGame = MessageBox.Show("Ban có muốn chơi tiếp?", "Chơi tiếp", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (ContinueGame == DialogResult.No)
+            {
+                Environment.Exit(0);
+            }
+            else GameReset();
+        }
+
+        private void GameReset() 
+        {
+            //Chỉnh tất cả các ô thành ô rỗng
+            foreach (GameCell cell in BoardCells)
+            {
+                BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
+                cell.RemoveBall();
+            }
+            // Bắt đầu tính điểm
+            gameScore = 0;
+            // Bắt đầu tính giờ
+            gameTimeSec = 0;
+            // Đổi lại điểm
+            RepaintCurrentScore();
+            //Khởi động lại bộ đếm thời gian
+            gameTimer.Start();
+            //Tạo các banh khi mới vào game
+            GenerateFirstPieces();
+            //Tạo banh nhỏ
+            GenerateNewPieces();
         }
     }
 }
