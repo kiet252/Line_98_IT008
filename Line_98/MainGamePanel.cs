@@ -449,14 +449,10 @@ namespace Line_98
                 animationBall.Dispose();
                 animationBall = null;
 
-                //Nếu tại ô đích có banh nhỏ, phóng to banh nhỏ đó và chuyển nó đến vị trí bất kì khác
-                if (BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos] < 0) GenerateFirstPieces(1, -BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos]);
-
                 // Cập nhật ô đích với banh thật
                 BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos] = movingBallColor;
                 destinationCell.ApplyColorToCell(movingBallColor);
                 destinationCell.BallToEnlarged();
-
                     
                 // Kiểm tra và xử lý điểm số
                 int gamePoint = GameAlgorithm.CheckAndRemoveBall(destinationCell, ref BoardColor, ref BoardCells);
