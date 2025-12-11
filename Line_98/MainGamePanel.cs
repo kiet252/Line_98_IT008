@@ -126,7 +126,7 @@ namespace Line_98
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             //Tạo các banh khi mới vào game
-            GenerateFirstPieces();
+            GenerateFirstPieces(MaxBallsPerInitialization);
 
             //Tạo các banh chuẩn bị biến thành banh to
             GenerateNewPieces();
@@ -449,11 +449,15 @@ namespace Line_98
                 animationBall.Dispose();
                 animationBall = null;
 
+                //Nếu tại ô đích có banh nhỏ, phóng to banh nhỏ đó và chuyển nó đến vị trí bất kì khác
+                if (BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos] < 0) GenerateFirstPieces(1, -BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos]);
+
                 // Cập nhật ô đích với banh thật
                 BoardColor[destinationCell.X_Pos, destinationCell.Y_Pos] = movingBallColor;
                 destinationCell.ApplyColorToCell(movingBallColor);
                 destinationCell.BallToEnlarged();
 
+                    
                 // Kiểm tra và xử lý điểm số
                 int gamePoint = GameAlgorithm.CheckAndRemoveBall(destinationCell, ref BoardColor, ref BoardCells);
                 if (gamePoint > 0)
@@ -470,20 +474,24 @@ namespace Line_98
             sourceCell = null;
             destinationCell = null;
         }
-        
+
         /// <summary>
-        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu
+        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu hoặc chuyển banh nhỏ vừa bị đè mất sang vị trí bất kì
         /// </summary>
-        private void GenerateFirstPieces()
+        /// <remarks>
+        /// ToGenerateColor = 0: giá trị mặc định đánh dấu các banh lớn được tạo ngẫu nhiên sẽ mang màu ngẫu nhiên
+        /// ToGenerateColor != 0: giá trị màu của banh sẽ có màu được truyền vào
+        /// </remarks>
+        private void GenerateFirstPieces(int GenerateCounts, int ToGenerateColor = 0)
         {
             Random random = new Random();
-            for (int i = 0; i < MaxBallsPerInitialization; i++)
+            for (int i = 0; i < GenerateCounts; i++)
             {
                 //Tìm vị trí ngẫu nhiên để tạo banh
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = random.Next(1, GameColor.Length);
+                int RandomColor = (ToGenerateColor == 0 ? random.Next(1, GameColor.Length) : ToGenerateColor);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
                 if (BoardColor[RandomX, RandomY] == 0)
                 {
@@ -492,6 +500,9 @@ namespace Line_98
                     //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
                     BoardColor[RandomX, RandomY] = RandomColor;
                 }
+                //Trong trường hợp vị trí ngẫu nhiên không rỗng, tìm vị trí khác
+                else
+                    i--; 
             }
         }
 
@@ -734,7 +745,7 @@ namespace Line_98
             //Khởi động lại bộ đếm thời gian
             gameTimer.Start();
             //Tạo các banh khi mới vào game
-            GenerateFirstPieces();
+            GenerateFirstPieces(MaxBallsPerInitialization);
             //Tạo banh nhỏ
             GenerateNewPieces();
         }

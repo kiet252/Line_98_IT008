@@ -177,8 +177,18 @@ namespace Line_98
                 g_Point += toRemove.Count;
                 foreach (GameCell cell in toRemove)
                 {
-                    BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
-                    cell.RemoveBall();
+                    if (PrevBoardColor[cell.X_Pos, cell.Y_Pos] < 0)
+                    {
+                        BoardColor[cell.X_Pos, cell.Y_Pos] = PrevBoardColor[cell.X_Pos, cell.Y_Pos];
+                        cell.BallToDefault();
+                        cell.ApplyColorToCell(PrevBoardColor[cell.X_Pos, cell.Y_Pos]);
+                    }
+                    else
+                    {
+                        BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
+                        cell.RemoveBall();
+                    }
+                        
                 }
                 GameSound.PlayDestroySound();
             }
