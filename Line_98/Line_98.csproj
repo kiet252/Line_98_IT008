@@ -65,6 +65,9 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -78,45 +81,75 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="fAbout.cs">
+    <Compile Include="Components\BadWordFilter.cs" />
+    <Compile Include="Components\Player.cs" />
+    <Compile Include="Components\PlayerInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\PlayerInfo.Designer.cs">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SupabaseManager.cs" />
+    <Compile Include="Forms\fAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="fAbout.Designer.cs">
+    <Compile Include="Forms\fAbout.Designer.cs">
       <DependentUpon>fAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="fHowToPlay.cs">
+    <Compile Include="Forms\fHowToPlay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="fHowToPlay.Designer.cs">
+    <Compile Include="Forms\fHowToPlay.Designer.cs">
       <DependentUpon>fHowToPlay.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameAlgorithm.cs" />
-    <Compile Include="GameBall.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="GameSound.cs" />
-    <Compile Include="MainGamePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Main_Form.cs">
+    <Compile Include="Forms\fLeaderboard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main_Form.Designer.cs">
+    <Compile Include="Forms\fLeaderboard.Designer.cs">
+      <DependentUpon>fLeaderboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\GameAlgorithm.cs" />
+    <Compile Include="Components\GameBall.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Components\GameSound.cs" />
+    <Compile Include="Components\MainGamePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\fPlayerName.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\fPlayerName.Designer.cs">
+      <DependentUpon>fPlayerName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Main_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Main_Form.Designer.cs">
       <DependentUpon>Main_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="GameCell.cs">
+    <Compile Include="Components\GameCell.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Components\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaveAndLoad.cs" />
-    <EmbeddedResource Include="fAbout.resx">
+    <Compile Include="Components\SaveAndLoad.cs" />
+    <EmbeddedResource Include="Components\PlayerInfo.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\fAbout.resx">
       <DependentUpon>fAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="fHowToPlay.resx">
+    <EmbeddedResource Include="Forms\fHowToPlay.resx">
       <DependentUpon>fHowToPlay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main_Form.resx">
+    <EmbeddedResource Include="Forms\fLeaderboard.resx">
+      <DependentUpon>fLeaderboard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\fPlayerName.resx">
+      <DependentUpon>fPlayerName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Main_Form.resx">
       <DependentUpon>Main_Form.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -124,6 +157,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

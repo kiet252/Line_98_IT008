@@ -126,7 +126,7 @@ namespace Line_98
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
             //Tạo các banh khi mới vào game
-            GenerateFirstPieces(MaxBallsPerInitialization);
+            GenerateFirstPieces();
 
             //Tạo các banh chuẩn bị biến thành banh to
             GenerateNewPieces();
@@ -472,33 +472,23 @@ namespace Line_98
         }
 
         /// <summary>
-        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu hoặc chuyển banh nhỏ vừa bị đè mất sang vị trí bất kì
+        /// Tạo những banh lớn đầu tiên khi trò chơi bắt đầu
         /// </summary>
-        /// <remarks>
-        /// ToGenerateColor = 0: giá trị mặc định đánh dấu các banh lớn được tạo ngẫu nhiên sẽ mang màu ngẫu nhiên
-        /// ToGenerateColor != 0: giá trị màu của banh sẽ có màu được truyền vào
-        /// </remarks>
-        private void GenerateFirstPieces(int GenerateCounts, int ToGenerateColor = 0)
+        private void GenerateFirstPieces()
         {
             Random random = new Random();
-            for (int i = 0; i < GenerateCounts; i++)
+            for (int i = 0; i < MaxBallsPerInitialization; i++)
             {
                 //Tìm vị trí ngẫu nhiên để tạo banh
                 int RandomX = random.Next(0, 9);
                 int RandomY = random.Next(0, 9);
                 //Chọn màu ngẫu nhiên cho banh
-                int RandomColor = (ToGenerateColor == 0 ? random.Next(1, GameColor.Length) : ToGenerateColor);
+                int RandomColor = random.Next(1, GameColor.Length);
                 //Nếu ô đang xét chưa có ball thì tạo ball tại ô đó
-                if (BoardColor[RandomX, RandomY] == 0)
-                {
-                    BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
-                    BoardCells[RandomX, RandomY].BallToEnlarged();
-                    //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
-                    BoardColor[RandomX, RandomY] = RandomColor;
-                }
-                //Trong trường hợp vị trí ngẫu nhiên không rỗng, tìm vị trí khác
-                else
-                    i--; 
+                BoardCells[RandomX, RandomY].ApplyColorToCell(RandomColor);
+                BoardCells[RandomX, RandomY].BallToEnlarged();
+                //Nhận vị trí cell và đặt màu mới cho BoardColor tại vị trí cell đó
+                BoardColor[RandomX, RandomY] = RandomColor;
             }
         }
 
@@ -604,7 +594,7 @@ namespace Line_98
             if (numBall < 5)
                 return;
 
-             gameScore += (numBall - 4) * (numBall + 5) / 2;
+            gameScore += (numBall - 4) * (numBall + 5) / 2;
 
             RepaintCurrentScore();
 
@@ -706,15 +696,23 @@ namespace Line_98
         /// Đồng thời hiển thị thời gian và điểm số
         /// </summary>
         private void GameEnd() {
-            if(gameScore > gameHishtestScore) {
-                MessageBox.Show("Chúc mừng bạn đạt được điểm cao nhất!\n" +
-                    $"Điểm của bạn là: {gameScore}\n" +
-                    $"Tổng thời gian chơi: {gameTimeSec}", "WIN", MessageBoxButtons.OK);
-            } else {
-                MessageBox.Show("Cố gắng vượt điểm cao nhất nhé!\n" +
-                    $"Điểm của bạn là: {gameScore}\n" +
-                    $"Tổng thời gian chơi: {gameTimeSec}", "LOSE", MessageBoxButtons.OK);
-            }
+            //if(gameScore > gameHishtestScore) {
+            //    MessageBox.Show("Chúc mừng bạn đạt được điểm cao nhất!\n" +
+            //        $"Điểm của bạn là: {gameScore}\n" +
+            //        $"Tổng thời gian chơi: {gameTimeSec}", "WIN", MessageBoxButtons.OK);
+            //} else {
+            //    MessageBox.Show("Cố gắng vượt điểm cao nhất nhé!\n" +
+            //        $"Điểm của bạn là: {gameScore}\n" +
+            //        $"Tổng thời gian chơi: {gameTimeSec}", "LOSE", MessageBoxButtons.OK);
+            //}
+
+            ShowLeaderboard();
+        }
+
+        private async void ShowLeaderboard()
+        {
+            fLeaderboard leaderboard = new fLeaderboard(gameScore, gameTimeSec);
+            leaderboard.ShowDialog();
 
             DialogResult ContinueGame = MessageBox.Show("Ban có muốn chơi tiếp?", "Chơi tiếp", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (ContinueGame == DialogResult.No)
@@ -741,7 +739,7 @@ namespace Line_98
             //Khởi động lại bộ đếm thời gian
             gameTimer.Start();
             //Tạo các banh khi mới vào game
-            GenerateFirstPieces(MaxBallsPerInitialization);
+            GenerateFirstPieces();
             //Tạo banh nhỏ
             GenerateNewPieces();
         }
