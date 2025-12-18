@@ -696,16 +696,6 @@ namespace Line_98
         /// Đồng thời hiển thị thời gian và điểm số
         /// </summary>
         private void GameEnd() {
-            //if(gameScore > gameHishtestScore) {
-            //    MessageBox.Show("Chúc mừng bạn đạt được điểm cao nhất!\n" +
-            //        $"Điểm của bạn là: {gameScore}\n" +
-            //        $"Tổng thời gian chơi: {gameTimeSec}", "WIN", MessageBoxButtons.OK);
-            //} else {
-            //    MessageBox.Show("Cố gắng vượt điểm cao nhất nhé!\n" +
-            //        $"Điểm của bạn là: {gameScore}\n" +
-            //        $"Tổng thời gian chơi: {gameTimeSec}", "LOSE", MessageBoxButtons.OK);
-            //}
-
             ShowLeaderboard();
         }
 
