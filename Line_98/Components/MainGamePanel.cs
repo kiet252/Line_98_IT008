@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Line_98.Components;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Drawing;
@@ -180,6 +181,7 @@ namespace Line_98
 
             // Bắt đầu tính điểm
             gameScore = 0;
+
             // Bắt đầu tính giờ
             gameTimeSec = 0;
             gameTimer.Tick += GameTimer_Tick;
@@ -212,6 +214,20 @@ namespace Line_98
                     BoardColor[Row, Col] = 0;
                 }
             }
+        }
+
+        /// <summary>
+        /// Lấy điểm cao nhất từ DB và build lại điểm
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadHighestScoreAsync() {
+            gameHishtestScore = await SupabaseManager.GetHighestScoreFromBD();
+            RepaintHighestScore();
+        }
+
+        protected override async void OnHandleCreated(EventArgs e) {
+            base.OnHandleCreated(e);
+            await LoadHighestScoreAsync();
         }
 
         /// <summary>

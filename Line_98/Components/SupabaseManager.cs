@@ -213,5 +213,38 @@ namespace Line_98.Components
                 MessageBox.Show($"Insert failed: {error}");
             }
         }
+
+        /// <summary>
+        /// Lấy điểm cao nhất từ DB
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<int> GetHighestScoreFromBD() {
+            try {
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri(baseURL);
+                client.DefaultRequestHeaders.Add("apikey", APIKey);
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIKey}");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+                // Lấy người có điểm cao nhất
+                string url = "rest/v1/PLAYER?select=highscore&order=highscore.desc&limit=1";
+                HttpResponseMessage response = await client.GetAsync(url);
+
+                if (response.IsSuccessStatusCode) {
+                    string json = await response.Content.ReadAsStringAsync();
+                    JArray data = JArray.Parse(json);
+
+                    if (data.Count > 0) {
+                        return (int)data[0]["highscore"];
+                    }
+                }
+            }
+            catch (Exception ex) {
+                MessageBox.Show($"GetHighestScore error: {ex.Message}");
+            }
+
+            return 0; // Không có dữ liệu
+        }
+
     }
 }
