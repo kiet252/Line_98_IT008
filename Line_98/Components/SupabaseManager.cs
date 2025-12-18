@@ -133,11 +133,11 @@ namespace Line_98.Components
                                 };
 
                                 string jsonData = JsonConvert.SerializeObject(updateData);
-                                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                                StringContent updateContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
                                 var request = new HttpRequestMessage(new HttpMethod("PATCH"), updateUrl)
                                 {
-                                    Content = content
+                                    Content = updateContent
                                 };
 
                                 HttpResponseMessage updateResponse = await client.SendAsync(request);
