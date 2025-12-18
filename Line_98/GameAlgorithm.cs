@@ -177,8 +177,18 @@ namespace Line_98
                 g_Point += toRemove.Count;
                 foreach (GameCell cell in toRemove)
                 {
-                    BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
-                    cell.RemoveBall();
+                    if (PrevBoardColor[cell.X_Pos, cell.Y_Pos] < 0)
+                    {
+                        BoardColor[cell.X_Pos, cell.Y_Pos] = PrevBoardColor[cell.X_Pos, cell.Y_Pos];
+                        cell.BallToDefault();
+                        cell.ApplyColorToCell(PrevBoardColor[cell.X_Pos, cell.Y_Pos]);
+                    }
+                    else
+                    {
+                        BoardColor[cell.X_Pos, cell.Y_Pos] = 0;
+                        cell.RemoveBall();
+                    }
+                        
                 }
                 GameSound.PlayDestroySound();
             }
@@ -191,17 +201,12 @@ namespace Line_98
         /// </summary>
         /// <param name="BoardColor"></param>
         public static void GetPrevBoard(int[,] BoardColor, int score) {
-            //Array.Copy(BoardColor, PrevBoardColor, BoardColor.Length);
-            Console.WriteLine("Save: ");
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     PrevBoardColor[i, j] = BoardColor[i, j];
-                    Console.Write($"{BoardColor[i, j].ToString(), 3}");
                 }
-                Console.WriteLine();
             }
             GameScore = score;
-            Console.WriteLine("\n");
         }
 
         /// <summary>
