@@ -28,6 +28,7 @@ namespace Line_98
             //Hiện luật chơi ngay khi mở trò chơi
             fHowToPlay help = new fHowToPlay();
             help.Show();
+            help.TopMost = true;
         }
 
         /// <summary>
