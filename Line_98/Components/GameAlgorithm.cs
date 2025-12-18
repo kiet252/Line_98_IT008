@@ -217,7 +217,7 @@ namespace Line_98
         public static void Undo(ref MainGamePanel panel) {
             for (int i = 0; i < 9; ++i) {
                 for(int j = 0; j < 9; ++j) {
-                    panel.setGameBoardColor(j, i, PrevBoardColor[j, i]);
+                    panel.setGameBoardColor(i, j, PrevBoardColor[i, j]);
                 }
             }
 
