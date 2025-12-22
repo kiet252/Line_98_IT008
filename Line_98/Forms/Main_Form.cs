@@ -72,7 +72,7 @@ namespace Line_98
         /// <param name="e"></param>
         private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
             GameAlgorithm.Undo(ref mainGamePanel);
-            mainGamePanel.GameTime += 30;
+            mainGamePanel.GameTime += 20;
 
             mainGamePanel.Invalidate();
             mainGamePanel.Refresh();
