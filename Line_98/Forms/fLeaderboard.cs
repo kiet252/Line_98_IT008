@@ -17,6 +17,11 @@ namespace Line_98
         private int _currentScore;
         private int _currentTimePlayed;
 
+        public fLeaderboard()
+        {
+            InitializeComponent();
+            OnlyLoadAsync();
+        }
         public fLeaderboard(int CurrentScore, int CurrentTimePlayed)
         {
             InitializeComponent();

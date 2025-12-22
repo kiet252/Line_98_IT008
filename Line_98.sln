@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Line_98", "Line_98\Line_98.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "GiaoDien\Utilities.csproj", "{1B218315-04D8-4DC1-9E85-C37A15DC1F40}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Line98", "Line98\Line98.vdproj", "{6B1FFAFA-20C8-2F06-D051-59DB32801EFB}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Line98_setup", "Line98_setup\Line98_setup.vdproj", "{52874517-DA14-1B8D-6613-9CD77F53184B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,8 +23,8 @@ Global
 		{1B218315-04D8-4DC1-9E85-C37A15DC1F40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B218315-04D8-4DC1-9E85-C37A15DC1F40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B218315-04D8-4DC1-9E85-C37A15DC1F40}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6B1FFAFA-20C8-2F06-D051-59DB32801EFB}.Debug|Any CPU.ActiveCfg = Debug
-		{6B1FFAFA-20C8-2F06-D051-59DB32801EFB}.Release|Any CPU.ActiveCfg = Release
+		{52874517-DA14-1B8D-6613-9CD77F53184B}.Debug|Any CPU.ActiveCfg = Debug
+		{52874517-DA14-1B8D-6613-9CD77F53184B}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

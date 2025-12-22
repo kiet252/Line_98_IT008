@@ -99,5 +99,11 @@ namespace Line_98
             fAbout about = new fAbout();
             about.Show();
         }
+
+        private void leaderboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fLeaderboard leaderboard = new fLeaderboard();
+            leaderboard.Show();
+        }
     }
 }

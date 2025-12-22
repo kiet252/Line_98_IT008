@@ -125,6 +125,20 @@
 
 Line 98 là một trò chơi xếp bóng kinh điển. Mục tiêu của người chơi là di chuyển các quả bóng sao cho tạo thành đường thẳng từ 5 bóng cùng màu trở lên để ghi điểm.
 
+⌨️ Phím tắt
+
+F1: Mở mô tả cách chơi
+
+F2: Mở thông tin về tác giả
+
+CTRL+S: Lưu game
+
+CTRL+O: Load game
+
+CTRL+U: Undo (Hoàn tác)
+
+CTRL+L: Hiển thị Leaderboard
+
 🎮 Luật chơi
 
 Bàn chơi gồm một lưới ô vuông (9×9).
